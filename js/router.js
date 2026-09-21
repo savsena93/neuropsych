@@ -7,9 +7,8 @@
  * a plain file:// URL with zero build step, which matters on a locked-down
  * offline tablet.
  *
- * Each route can declare which role(s) may enter it. Test-module screens
- * will register themselves the same way once they exist (Phase 2) —
- * nothing here is specific to any one test.
+ * Each route can declare which role(s) may enter it. Assessment screens
+ * use the same mechanism as the administrative workspace.
  */
 
 var Router = (function () {

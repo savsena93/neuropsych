@@ -8,27 +8,24 @@
     1. Large touch targets (min. 44px, most buttons taller) and high
        contrast text, since the device is small and rooms are often
        poorly lit.
-    2. No web fonts, no icon fonts, no drop-shadows or gradients — the
-       app must stay legible and fast on a 1GHz CPU with the screen
-       off any network.
-    3. Flat surfaces with a single hairline border rather than
-       shadow-based "cards" — the boundaries between sections matter
-       more here than decoration does, and hairlines are cheaper to
-       paint than shadows.
+     2. No web fonts or icon fonts — the app remains fully offline and
+       predictable on a locked-down tablet.
+     3. Restrained shadows, gradients, and rounded surfaces establish
+       hierarchy without turning a clinical tool into a marketing page.
 
   Token system
   -----------------------------------------------------------------------
   Color:
-    --color-bg          #EEF2F1  page background, cool and calm
+    --color-bg          #F4F7F8  page background
     --color-surface     #FFFFFF  panels, table rows
-    --color-border      #C9D2D0  hairline dividers
-    --color-text        #1B2124  primary text, near- but not pure-black
-    --color-text-muted  #5B6664  secondary text, hints
-    --color-primary     #1D5C63  main actions, active nav
-    --color-primary-dark#123B40  hover/active state of primary
-    --color-warn        #96591A  pause/skip, caution
-    --color-danger      #A32638  destructive actions
-    --color-success     #2E7D4F  completed states
+    --color-border      #D8E1E5  dividers
+    --color-text        #17252D  primary text
+    --color-text-muted  #60717A  secondary text, hints
+    --color-primary     #176B73  main actions, active nav
+    --color-primary-dark#0E4D55  hover/active state of primary
+    --color-warn        #9B641D  pause/skip, caution
+    --color-danger      #B33A4B  destructive actions
+    --color-success     #27785A  completed states
   Type:
     System font stack only (see below) — one family, three weights.
   Layout:
@@ -36,22 +33,22 @@
 */
 
 :root {
-  --color-bg: #EEF2F1;
-  --color-surface: #FFFFFF;
-  --color-border: #C9D2D0;
-  --color-text: #1B2124;
-  --color-text-muted: #5B6664;
-  --color-primary: #1D5C63;
-  --color-primary-dark: #123B40;
-  --color-warn: #96591A;
-  --color-danger: #A32638;
-  --color-danger-dark: #7C1D2B;
-  --color-success: #2E7D4F;
+  --color-bg: #f4f7f8;
+  --color-surface: #ffffff;
+  --color-border: #d8e1e5;
+  --color-text: #17252d;
+  --color-text-muted: #60717a;
+  --color-primary: #176b73;
+  --color-primary-dark: #0e4d55;
+  --color-warn: #9b641d;
+  --color-danger: #b33a4b;
+  --color-danger-dark: #8f2b3b;
+  --color-success: #27785a;
 
-  --font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --radius: 4px;
-  --space-1: 4px;
-  --space-2: 8px;
+  --font-family: "Aptos", "Segoe UI", sans-serif;
+  --radius: 8px;
+  --space-1: 6px;
+  --space-2: 10px;
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 40px;
@@ -677,29 +674,8 @@ h1, h2, h3 {
 }
 
 /* ---------------------------------------------------------------------
-   Clinical workspace refresh
+  Clinical workspace
 --------------------------------------------------------------------- */
-:root {
-  --color-bg: #f4f7f8;
-  --color-surface: #ffffff;
-  --color-border: #d8e1e5;
-  --color-text: #17252d;
-  --color-text-muted: #60717a;
-  --color-primary: #176b73;
-  --color-primary-dark: #0e4d55;
-  --color-warn: #9b641d;
-  --color-danger: #b33a4b;
-  --color-danger-dark: #8f2b3b;
-  --color-success: #27785a;
-  --font-family: "Aptos", "Segoe UI", sans-serif;
-  --radius: 8px;
-  --space-1: 6px;
-  --space-2: 10px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 40px;
-}
-
 html, body {
   font-size: 16px;
   line-height: 1.5;

@@ -2,12 +2,8 @@
  * app.js
  * -----------------------------------------------------------------------
  * Bootstraps the app: registers every route with Router, wires up all
- * the DOM event handlers for the screens that exist in Phase 1
- * (login, both dashboards, user management, participant intake +
- * consent capture, audit log, backup/restore).
- *
- * The assessment runner, scoring, reports and Practice Mode are loaded
- * from the shared test-flow and test modules after this shell boots.
+ * the DOM event handlers for authentication, dashboards, participant
+ * intake, consent, assessment records, audit activity, and backup.
  */
 
 (function () {
@@ -287,16 +283,6 @@
         Router.navigate('consentCapture');
       }
     });
-  }
-
-  function routeHome() {
-    if (Auth.isExaminee()) {
-      // Examinees have no dashboard — leaving any of their screens means
-      // logging out and handing the tablet back to the examiner.
-      logout();
-      return;
-    }
-    Router.navigate(Auth.isAdmin() ? 'adminDashboard' : 'examinerDashboard');
   }
 
   function configureRunnerControls() {

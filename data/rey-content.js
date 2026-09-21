@@ -64,7 +64,7 @@ var REY_SCORING_KEY_PROMPT = (
 var ReyContent = {
   name: 'Rey Complex Figure Test (copy / immediate / delayed)',
   items: [
-    // ---- Phase 1: copy (figure shown, no countdown) ------------------------
+    // ---- Copy: figure shown, no countdown -------------------------------
     {
       id: 'copy',
       section: 'Copy phase',
@@ -100,7 +100,7 @@ var ReyContent = {
       allowSkip: true
     },
 
-    // ---- Phase 2: immediate recall (figure NOT shown) -------------------------
+    // ---- Immediate recall: figure not shown ------------------------------
     {
       id: 'immediate_recall',
       section: 'Immediate recall',
