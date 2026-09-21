@@ -1,0 +1,18 @@
+{
+  "name": "neuropsych-app",
+  "private": true,
+  "description": "Neuropsychological Assessment Toolkit - Cloudflare Workers + D1 deployment configuration",
+  "scripts": {
+    "dev": "wrangler dev --no-live-reload --no-bundle --persist-to ../.wrangler-neuropsych",
+    "deploy": "wrangler deploy",
+    "db:init:local": "wrangler d1 execute DB --file=schema.sql --local --persist-to ../.wrangler-neuropsych",
+    "db:init:remote": "wrangler d1 execute DB --file=schema.sql --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true,
+    "workerd@1.20260918.1": true
+  }
+}

@@ -1,0 +1,27 @@
+# .assetsignore
+# -----------------------------------------------------------------------
+# Files in this folder that must NOT be uploaded as static assets when
+# the app is deployed to Cloudflare Workers (same syntax as .gitignore).
+# The hosted deployment serves only the app itself: index.html, css/,
+# js/, data/ and assets/. Everything else stays in the repository only.
+
+node_modules
+.wrangler
+.dev.vars
+.git
+
+# server + config files
+worker.js
+wrangler.toml
+schema.sql
+package.json
+package-lock.json
+.assetsignore
+
+# documentation and source documents
+README.md
+DEPLOYMENT.md
+AUTHORIZATION.md
+SRS.txt
+*.pdf
+*.docx

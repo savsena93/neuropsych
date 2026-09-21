@@ -1,0 +1,27 @@
+# wrangler.toml
+# -----------------------------------------------------------------------
+# Cloudflare Workers configuration for the neuropsych toolkit.
+# Deploy with:  npx wrangler deploy   (see DEPLOYMENT.md for the full
+# walkthrough: Node install, GitHub repo, D1 database creation, deploy).
+
+name = "neuropsych-app"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+# Static assets (index.html, css/, js/, data/, assets/) are served
+# directly by the Workers assets layer; the /api/* paths are always
+# handled by worker.js instead. Everything else in the folder that is
+# not part of the app (PDFs, docx files, node_modules, config files) is
+# excluded from the upload via .assetsignore.
+[assets]
+directory = "./"
+run_worker_first = ["/api/*"]
+
+# D1 — Cloudflare's serverless SQLite database. Create it once with:
+#   npx wrangler d1 create neuropsych-db
+# then paste the printed database_id below and apply the schema:
+#   npx wrangler d1 execute DB --file=schema.sql --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "neuropsych"
+database_id = "4be4327a-d04f-4c77-8070-8138465c5890"

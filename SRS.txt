@@ -1,0 +1,45 @@
+There are a number of tests that have to be included in the app.
+
+- The tests requires input that will either be inputted as text, or there are some sections that will have to store an image drawn by the individual through a tablet and a stylus.
+- For each of these tests, the individual should not have access to the grade after it
+- So the examiner is the on to select which of these tests you will get to take
+- For each participant or examinee, his answers and grades should be compiled into a downloadable pdf. So lets say that the examiner gave him test1, and test2, all the grades and answers the person gave to the question should be compiled into one pdf. It should be indicated on the pdf, the tests, and then the answers and grade. It should also show the participants code or pin or whatever he used to login at the top. 
+- The state of incomplete tests should be stored as such and resumed upon the next login. This also means that the completed tests should have to be marked as completed. 
+- If there is anything that is not clear or requires clarification let me know.
+- For the tech stack lets use, sveltete,javascript,html and css, sveltekit and then SQLite for the database. Or whatever techstack you think will fit our situation best and make the work simple even, if it is using flask or fastapi or whatever.
+- Note that everything will have to be pushed to cloudfare workers so you would also have to do that? What is the best way to do that? To connect or GitHub to the cloudfrare workers? If so then we would push our code there in a new repo first.
+- I do not have node runtime installed i only have python installed. Is it necessary to install node?
+- Follow the guidlines for ui and ux so that the front end looks wonderful
+- This is all being done in order to fufill the requirements of PSYC 728 ... every other thing is to help us achieve that
+- I have also included the .docx document of the tests in the same directory read all so that you are aware of what we are dealing with
+- Read everything before you start and let me know your plan and recommendations
+
+
+
+#MOCA TEST
+- There are multiple domains and each test has an image in relation to it
+- Extract the necessary images along with the questions needed and separate them as different questions
+- And for the grading follow the instructions in the pdf.
+- For the questions that does not require the examinee to see the questions do not show the question. But indicate the domain or what kind of something is being done. This applies to all the tests
+
+#RQCS
+- Under every domain there are different domains. Extract the questions under each domain, and asks questions separately.
+
+#Trail making
+- This test involves joining values or circles in the correct order and it must be done in one sucession without lifiting up the stylus. There is a start element and an end element as well as instructions as to how to go about it. The connected elements should have a colour different from the  ones that have not yet been connected. If the stylus is lifted up before reaching the end, it is counted as an error.
+- There are practice parts and the actual test
+- There is a need to be able to know the time that was taken in order to complete the test so take that one too into consideration. It should be timed from the time the person started the test and when he ended and that should be recorded
+- It is necessary for the the examiner to be able to see in real time as the individual draws
+
+#Rey Complex Figure
+- For this one, extract the image from the pdf
+- For each of these tests, it is timed, from the start they start drawing till the time they finish drawing it.
+- The first one, ray copy, the examinee should have the image, it does not have any count down, for how long the image is shown. The individual starts drawing only after the person is confident in it. 
+- For the second one, immediate, after 3 minutes, the person is asked to reproduce the image from memory. There should be no hint from the initial tests that there are subsequent ones
+- The third one is the ray delayed, a few minutes like 3 minutes second one, the examinee is required to draw the image again
+- The image is only shown for the first one. For the second and third it is not shown
+- For this one too, it is necessary for the examiner to see in real time as the examinee draws it 
+
+#BSI
+- The bsi is just a questionnaire so you would just be selecting what applies to you
+- 

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Neuropsychological Assessment Toolkit | Prototype</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ======================= LOGIN ======================= -->
+<section data-view="login" class="screen screen--centered">
+  <div class="panel panel--narrow">
+    <h1 class="app-title">Neuropsychological Assessment Toolkit</h1>
+    <p class="app-subtitle">Offline-ready feasibility prototype. Participant names are not stored.</p>
+
+    <form id="loginForm" class="stack">
+      <label class="field">
+        <span class="field__label">Log in as</span>
+        <select id="loginRole" class="field__input field__input--large">
+          <option value="admin">Administrator</option>
+          <option value="examiner">Examiner</option>
+          <option value="examinee">Examinee: taking a test</option>
+        </select>
+      </label>
+      <label class="field" id="loginPinField">
+        <span class="field__label">Enter your PIN</span>
+        <input id="loginPin" type="password" inputmode="numeric" autocomplete="off" class="field__input field__input--large" placeholder="••••">
+      </label>
+      <label class="field" id="loginCodeField" hidden>
+        <span class="field__label">Enter the participant code your examiner gave you</span>
+        <input id="loginCode" type="text" autocomplete="off" class="field__input field__input--large" placeholder="e.g. P-014">
+      </label>
+      <p id="loginError" class="banner banner--error" hidden></p>
+      <button type="submit" class="btn btn--primary btn--large btn--block">Log in</button>
+    </form>
+    <p class="hint">Staff PINs are created by the administrator under Admin &rarr; Users. First run only: default administrator PIN is <strong>1234</strong>. Examinees log in with the participant code created at intake, sign consent, then take the tests selected with them.</p>
+  </div>
+</section>
+
+<!-- ======================= CHANGE PIN (forced on first login) ======================= -->
+<section data-view="changePin" class="screen screen--centered" hidden>
+  <div class="panel panel--narrow">
+    <h1 class="app-title">Set a new PIN</h1>
+    <p class="app-subtitle">For security, choose a new PIN before continuing.</p>
+    <form id="changePinForm" class="stack">
+      <label class="field">
+        <span class="field__label">New PIN (min. 4 digits)</span>
+        <input id="newPin" type="password" inputmode="numeric" minlength="4" required class="field__input">
+      </label>
+      <label class="field">
+        <span class="field__label">Confirm new PIN</span>
+        <input id="confirmPin" type="password" inputmode="numeric" minlength="4" required class="field__input">
+      </label>
+      <p id="changePinError" class="banner banner--error" hidden></p>
+      <button type="submit" class="btn btn--primary btn--block">Save PIN and continue</button>
+    </form>
+  </div>
+</section>
+
+<!-- ======================= ADMIN: DASHBOARD ======================= -->
+<section data-view="adminDashboard" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button id="adminLogoutBtn" class="btn btn--ghost">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item is-active" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item" data-nav="adminUsers">Users</button>
+    <button class="tabs__item" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <div class="stat-row">
+      <div class="stat-card"><span class="stat-card__value" id="statUsers">0</span><span class="stat-card__label">Users</span></div>
+      <div class="stat-card"><span class="stat-card__value" id="statParticipants">0</span><span class="stat-card__label">Participants</span></div>
+      <div class="stat-card"><span class="stat-card__value" id="statSessions">0</span><span class="stat-card__label">Assessment records</span></div>
+    </div>
+    <p class="hint">Monitor users, participants, assessment records, audit activity, and backups from the administrator workspace.</p>
+  </main>
+</section>
+
+<!-- ======================= ADMIN: USERS ======================= -->
+<section data-view="adminUsers" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button class="btn btn--ghost admin-logout-btn">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item is-active" data-nav="adminUsers">Users</button>
+    <button class="tabs__item" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <h2 class="section-heading">Users</h2>
+    <table class="data-table">
+      <thead><tr><th>Name</th><th>Role</th><th>Created</th><th></th></tr></thead>
+      <tbody id="usersTableBody"></tbody>
+    </table>
+
+    <h3 class="section-heading section-heading--minor">Add a user</h3>
+    <form id="addUserForm" class="form-row">
+      <label class="field"><span class="field__label">Name</span>
+        <input id="newUserName" type="text" required class="field__input">
+      </label>
+      <label class="field"><span class="field__label">Role</span>
+        <select id="newUserRole" class="field__input">
+          <option value="examiner">Examiner</option>
+          <option value="admin">Administrator</option>
+        </select>
+      </label>
+      <label class="field"><span class="field__label">PIN</span>
+        <input id="newUserPin" type="password" inputmode="numeric" minlength="4" required class="field__input">
+      </label>
+      <button type="submit" class="btn btn--primary">Add user</button>
+    </form>
+    <p id="addUserError" class="banner banner--error" hidden></p>
+  </main>
+</section>
+
+<!-- ======================= ADMIN: PARTICIPANTS ======================= -->
+<section data-view="adminParticipants" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button class="btn btn--ghost admin-logout-btn">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item" data-nav="adminUsers">Users</button>
+    <button class="tabs__item is-active" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <h2 class="section-heading">All participants</h2>
+    <p class="hint">Participants are identified by code only. Withdrawing consent permanently erases the participant data.</p>
+    <table class="data-table">
+      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th></th></tr></thead>
+      <tbody id="adminParticipantsTable"></tbody>
+    </table>
+  </main>
+</section>
+
+<!-- ======================= ADMIN: SESSIONS ======================= -->
+<section data-view="adminSessions" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button class="btn btn--ghost admin-logout-btn">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item" data-nav="adminUsers">Users</button>
+    <button class="tabs__item" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item is-active" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <h2 class="section-heading">All assessment records</h2>
+    <table class="data-table">
+      <thead><tr><th>Participant</th><th>Examiner</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th></th></tr></thead>
+      <tbody id="adminSessionsTableBody"></tbody>
+    </table>
+  </main>
+</section>
+
+<!-- ======================= ADMIN: AUDIT LOG ======================= -->
+<section data-view="adminAuditLog" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button class="btn btn--ghost admin-logout-btn">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item" data-nav="adminUsers">Users</button>
+    <button class="tabs__item" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item is-active" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <h2 class="section-heading">Audit log</h2>
+    <table class="data-table">
+      <thead><tr><th>Time</th><th>Actor role</th><th>Action</th><th>Target</th><th>Reason</th></tr></thead>
+      <tbody id="auditLogTableBody"></tbody>
+    </table>
+  </main>
+</section>
+
+<!-- ======================= ADMIN: BACKUP ======================= -->
+<section data-view="adminBackup" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Administrator</div>
+    <button class="btn btn--ghost admin-logout-btn">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item" data-nav="adminDashboard">Overview</button>
+    <button class="tabs__item" data-nav="adminUsers">Users</button>
+    <button class="tabs__item" data-nav="adminParticipants">Participants</button>
+    <button class="tabs__item" data-nav="adminSessions">Assessment records</button>
+    <button class="tabs__item" data-nav="adminAuditLog">Audit log</button>
+    <button class="tabs__item is-active" data-nav="adminBackup">Backup</button>
+  </nav>
+  <main class="content">
+    <h2 class="section-heading">Backup to USB</h2>
+    <p class="hint">Export everything as a single JSON file to copy onto a USB drive, or import a JSON file from another device.</p>
+    <div class="button-row">
+      <button id="exportBtn" class="btn btn--primary">Export backup (.json)</button>
+      <label class="btn btn--secondary file-btn">
+        Import backup (.json)
+        <input id="importFileInput" type="file" accept="application/json" hidden>
+      </label>
+    </div>
+    <p id="backupStatus" class="banner banner--info" hidden></p>
+  </main>
+</section>
+
+<!-- ======================= EXAMINER: DASHBOARD ======================= -->
+<section data-view="examinerDashboard" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Examiner</div>
+    <button id="examinerLogoutBtn" class="btn btn--ghost">Log out</button>
+  </header>
+  <nav class="tabs">
+    <button class="tabs__item is-active" type="button" data-scroll-to="examinerOverview">Overview</button>
+    <button class="tabs__item" type="button" data-scroll-to="examinerRecords">Assessment records</button>
+  </nav>
+  <main class="content">
+    <div id="examinerOverview" class="button-row">
+      <button id="newAssessmentBtn" class="btn btn--primary btn--large">+ New assessment</button>
+    </div>
+
+    <h2 class="section-heading">Your participants</h2>
+    <table class="data-table">
+      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th></th></tr></thead>
+      <tbody id="examinerParticipantsTable"></tbody>
+    </table>
+
+    <h2 id="examinerRecords" class="section-heading">Your assessment records</h2>
+    <table class="data-table">
+      <thead><tr><th>Participant</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th></th></tr></thead>
+      <tbody id="examinerSessionsTableBody"></tbody>
+    </table>
+  </main>
+</section>
+
+<!-- ======================= PARTICIPANT INTAKE ======================= -->
+<section data-view="participantIntake" class="screen screen--centered" hidden>
+  <div class="panel">
+    <h1 class="app-title">New participant</h1>
+    <p class="app-subtitle">Do not enter the participant's name. Use a code only.</p>
+    <form id="intakeForm" class="stack">
+      <label class="field"><span class="field__label">Participant code</span>
+        <input id="intakeCode" type="text" required class="field__input" placeholder="e.g. P-014">
+      </label>
+      <label class="field"><span class="field__label">Age</span>
+        <input id="intakeAge" type="number" min="0" max="120" required class="field__input">
+      </label>
+      <label class="field"><span class="field__label">Sex</span>
+        <select id="intakeSex" class="field__input">
+          <option value="female">Female</option>
+          <option value="male">Male</option>
+          <option value="other">Other / not disclosed</option>
+        </select>
+      </label>
+      <label class="field"><span class="field__label">Years of education</span>
+        <input id="intakeEducation" type="number" min="0" max="30" required class="field__input">
+      </label>
+      <label class="field"><span class="field__label">Diagnosis / referral reason</span>
+        <textarea id="intakeReferral" class="field__input field__input--textarea" rows="2"></textarea>
+      </label>
+      <p id="intakeError" class="banner banner--error" hidden></p>
+      <div class="button-row">
+        <button type="button" id="intakeCancelBtn" class="btn btn--ghost">Cancel</button>
+        <button type="submit" class="btn btn--primary">Continue to consent</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ======================= CONSENT CAPTURE ======================= -->
+<section data-view="consentCapture" class="screen screen--centered" hidden>
+  <div class="panel">
+    <h1 class="app-title">Informed consent</h1>
+    <p class="app-subtitle">Participant code: <strong id="consentParticipantCode">Not assigned</strong></p>
+    <p class="consent-text">
+      [Placeholder consent text. Replace this with the approved informed-consent script for the study.]
+      Please read the consent information aloud to the participant, then ask them to sign below
+      using their finger or a stylus.
+    </p>
+    <label class="checkbox-row">
+      <input id="consentUnderstoodCheckbox" type="checkbox">
+      <span>The participant confirms they understand and agree to take part.</span>
+    </label>
+
+    <div class="signature-frame">
+      <canvas id="consentCanvas" class="signature-canvas" aria-label="Signature area"></canvas>
+    </div>
+    <p id="clearIsDisabledNotice" class="hint">Sign once, carefully. Clear and undo are disabled by design.</p>
+
+    <p id="consentError" class="banner banner--error" hidden></p>
+    <div class="button-row">
+      <button type="button" id="consentBackBtn" class="btn btn--ghost">Cancel</button>
+      <button type="button" id="consentSubmitBtn" class="btn btn--primary">Record consent</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= RESUME IN-PROGRESS SESSIONS (SRS) ======================= -->
+<section data-view="resumeSession" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Continue where you left off</div>
+    <button id="resumeLeaveBtn" class="btn btn--ghost">Log out</button>
+  </header>
+  <main class="content">
+    <h2 class="section-heading">Incomplete assessments</h2>
+    <p class="hint">These sessions were started but not finished. Resume continues where each one stopped. Completed sessions are not listed here.</p>
+    <table class="data-table">
+      <thead><tr><th>Participant</th><th>Tests</th><th>Started</th><th></th></tr></thead>
+      <tbody id="resumeSessionsTableBody"></tbody>
+    </table>
+    <div class="button-row">
+      <button id="startNewAssessmentBtn" class="btn btn--primary">Start a new assessment instead</button>
+    </div>
+  </main>
+</section>
+
+<!-- ======================= EXAMINER LIVE VIEW (SRS: real-time drawing) ======================= -->
+<section data-view="liveView" class="screen" hidden>
+  <header class="topbar">
+    <div class="topbar__title">Live drawing view</div>
+    <button id="liveViewBackBtn" class="btn btn--ghost">&larr; Back</button>
+  </header>
+  <main class="content">
+    <p class="hint">This view refreshes about once a second while the participant draws. A snapshot appears after the first stroke.</p>
+    <div id="liveViewMeta" class="tally-count"></div>
+    <div class="signature-frame"><img id="liveViewImage" alt="Live drawing, updated automatically" style="width:100%; background:#fff;"></div>
+  </main>
+</section>
+
+<!-- ======================= TEST SELECTION (examiner picks tests FIRST) ======================= -->
+<section data-view="testSelection" class="screen screen--centered" hidden>
+  <div class="panel">
+    <h1 class="app-title">New assessment: select tests</h1>
+    <p class="app-subtitle">Choose which tests to administer, then continue to participant details.</p>
+    <form id="testSelectionForm" class="stack">
+      <div id="testSelectionChecklist" class="checklist"></div>
+      <label class="checkbox-row checkbox-row--practice">
+        <input id="practiceModeToggle" type="checkbox">
+        <span><strong>Practice Mode</strong>: this session is not counted as a real record.</span>
+      </label>
+      <p id="testSelectionError" class="banner banner--error" hidden></p>
+      <div class="button-row">
+        <button type="button" class="btn btn--ghost" data-nav-back>Cancel</button>
+        <button type="submit" class="btn btn--primary">Continue to participant details</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ======================= TEST RUNNER ======================= -->
+<section data-view="testRunner" class="screen" hidden>
+  <div id="practiceBanner" class="practice-banner" hidden>PRACTICE MODE: this session is not a real record</div>
+  <header class="topbar">
+    <div class="topbar__title" id="testRunnerTitle">Assessment in progress</div>
+    <button id="pauseSessionBtn" class="btn btn--ghost">Pause</button>
+    <button id="stopSessionBtn" class="btn btn--danger">Stop assessment</button>
+    <button id="runnerLogoutBtn" class="btn btn--ghost">Log out</button>
+  </header>
+  <main class="content content--narrow">
+    <div id="testRunnerContainer"></div>
+  </main>
+  <div id="pauseOverlay" class="pause-overlay" hidden>
+    <div class="panel panel--narrow">
+      <h2 class="app-title">Session paused</h2>
+      <p class="hint">Timers are frozen. Resume when ready.</p>
+      <button id="resumeSessionBtn" class="btn btn--primary btn--block">Resume</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= SESSION SUMMARY ======================= -->
+<section data-view="sessionSummary" class="screen" hidden>
+  <div id="practiceBannerSummary" class="practice-banner" hidden>PRACTICE MODE: this session is not a real assessment</div>
+  <header class="topbar">
+    <div class="topbar__title">Assessment complete</div>
+    <button id="summaryLogoutBtn" class="btn btn--ghost">Log out</button>
+  </header>
+  <main class="content" id="printableReport">
+    <h2 class="section-heading">Summary for participant <span id="summaryParticipantCode">Not assigned</span></h2>
+    <div id="summaryTestBlocks" class="stack"></div>
+    <div class="button-row no-print">
+      <button id="printReportBtn" class="btn btn--secondary">Print / Save as PDF</button>
+      <button id="summaryFinishBtn" class="btn btn--primary">Finish</button>
+    </div>
+  </main>
+</section>
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/router.js"></script>
+
+<!-- Editable test content — load BEFORE the matching js/tests/*.js file,
+     which reads these globals once, at load time. -->
+<script src="data/moca-content.js"></script>
+<script src="data/rqcst-content.js"></script>
+<script src="data/rey-content.js"></script>
+<script src="data/tmt-content.js"></script>
+<script src="data/bsi18-content.js"></script>
+
+<script src="js/tests/engine.js"></script>
+<script src="js/tests/moca.js"></script>
+<script src="js/tests/rqcst.js"></script>
+<script src="js/tests/rey.js"></script>
+<script src="js/tests/tmt.js"></script>
+<script src="js/tests/bsi18.js"></script>
+
+<script src="js/test-flow.js"></script>
+<script src="js/app.js"></script>
+<script src="js/backup-ui.js"></script>
+
+<div id="reasonDialog" class="modal" hidden>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="reasonDialogTitle">
+    <h2 id="reasonDialogTitle">Reason required</h2>
+    <p id="reasonDialogMessage" class="hint"></p>
+    <label class="field">
+      <span class="field__label">Reason</span>
+      <textarea id="reasonDialogInput" class="field__input field__input--textarea" rows="3"></textarea>
+    </label>
+    <p id="reasonDialogError" class="banner banner--error" hidden></p>
+    <div class="button-row">
+      <button id="reasonDialogCancel" type="button" class="btn btn--ghost">Cancel</button>
+      <button id="reasonDialogSubmit" type="button" class="btn btn--danger">Continue</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

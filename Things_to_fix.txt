@@ -1,0 +1,28 @@
+# Things to fix
+- The marking should not show at the side of the examiner
+- Now what we will do is to have the examiner see what the examinee is doing with the option to score the examinee but the examinee should not be able to see anything about the grading. The examinee only has to see the questions and be able to draw or answer the questions
+- Examinee should not be able to skip but the examiner should, the examiner should also be able to stop the test and in that case it should be indicated as stopped
+- The examiner should have a live view of the drawing specifically for the ray test. For the others the examiner should be able to see the question the participant answered and the answer the person gave so as to grade the person. So first of all, it shows the questions to both the examiner and examinee at the same time, but updates to add the examinee's answers and grading options after the examiner answers. 
+- For the part where the examiner reads or says something out loud it should only show at the examiners side and not the examinees. The examinee should only be able to input his or her answer.
+- The only capability of the examiner is answering the questions, skipping and pausing happen at the examiner side at the discrection of the examiner
+
+
+- For the trail making test you dont tell the person he or she has made an error when he/she slects something wrong, the only thing is that you reset what has be done so far when the person lifts up the stylus from the screen. Also the line should not be straight but it should be as connected by the individual
+- The finished button is also not working
+- Also there is no need for a timer here
+
+- The assessment records section is empty in the administrator sections, but the dashboard shows a count of 1 in assessment which is right in it
+- Okay so update it took sometime for the data to show in assessment record, and there is only an option to delete
+- The examiner and administrator are supposed to be capable of downloading the assessement results of the examinees but there is no such option
+- For some reason the updates for the overview and other dynamic data update is slow
+- The ui is also not so well designed, it should show the full menu in which ever menu you are in and not just the overview button
+- Reloading also causes you to logout regardless of who you are, that should not be the case
+- The logout button should also show every where
+- Also the necessary images were not included in every section
+
+- When you start a new assessment it should not automatically show anything but then it should take you to the examiner page which shows the tests.
+- For the timing of the tests, there are specific tests that have been listed in the srs and also the overall time of the tests, this also included in the assessment results
+- Also i am not able to move forward and back for some reason
+- Redesign the ui to a functional and intuitive ui
+- Also for the images and others i believe they are best stored in object store and the other metadata info stored in sqlite
+- Need to figure out a way to store images since object store requires payment details

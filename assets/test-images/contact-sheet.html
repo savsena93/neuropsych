@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Extracted test images — verification contact sheet</title>
+<style>
+  body { font-family: sans-serif; margin: 24px; background: #fff; color: #111; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 16px; margin-top: 40px; border-bottom: 2px solid #111; padding-bottom: 4px; }
+  .card { display: inline-block; vertical-align: top; margin: 10px; padding: 8px; border: 1px solid #bbb; background: #fafafa; max-width: 320px; }
+  .card img { max-width: 300px; max-height: 220px; display: block; background: #fff; border: 1px solid #ddd; }
+  .card .name { font-size: 12px; font-family: monospace; margin-top: 6px; }
+  .note { background: #fffbe6; border: 1px solid #e0d48a; padding: 10px 14px; font-size: 14px; }
+  code { background: #eee; padding: 1px 4px; }
+</style>
+</head>
+<body>
+<h1>Extracted test images — verification contact sheet</h1>
+<p class="note">
+  These are every image extracted from the five test .docx documents, now stored in
+  <code>assets/test-images/</code>. Open this file in a browser and check that the
+  filenames the app references (listed below) show the right figures. If a mapping is
+  wrong, tell opencode the correct filename and it will update the content file —
+  or just edit the <code>stimulusImage</code> path in <code>data/*-content.js</code> yourself.
+  <br><br>
+  <strong>Filenames the app currently uses:</strong><br>
+  MoCA sheet v8.1: <code>moca/image1.png</code> &middot; MoCA sheet v8.2: <code>moca/image2.png</code> &middot;
+  BSI-18 form: <code>bsi/image1.png</code><br>
+  Rey complex figure: <code>rey/image1.jpg</code> (verify! the other 18 are the scoring elements
+  from the automated-scoring paper)<br>
+  RQCST figures (items 14, 16, 18/19, 25&ndash;29, 38&ndash;42, 43&ndash;47): the larger files
+  <code>rqcst/image1.jpg</code>, <code>image2.jpg</code>, <code>image3.png</code>,
+  <code>image5.jpg</code>, <code>image7.jpg</code>, <code>image15.jpg</code>,
+  <code>image16.png</code>, <code>image21.png</code>, <code>image130.jpg</code> are the likely candidates —
+  verify which is which and report back.<br>
+  TMT worksheets: <code>tmt/image0.jpg</code>…<code>image4.jpg</code>, <code>image20.jpg</code>
+  (Part A, Part B, samples — verify which is which).
+</p>
+<div id="sheet"></div>
+<script>
+(function () {
+  var folders = ['moca', 'tmt', 'bsi', 'rey', 'rqcst'];
+  var sheet = document.getElementById('sheet');
+  // Simple manifest built from the known file lists (kept in sync with
+  // assets/test-images/ — regenerated whenever images are re-extracted).
+  var manifest = {
+    moca: ['image1.png', 'image2.png'],
+    tmt: ['image0.jpg', 'image1.jpg', 'image2.jpg', 'image20.jpg', 'image3.jpg', 'image4.jpg'],
+    bsi: ['image1.png'],
+    rey: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg', 'image6.jpg', 'image7.jpg', 'image8.jpg', 'image9.jpg', 'image10.jpg', 'image11.jpg', 'image12.jpg', 'image20.jpg', 'image50.jpg', 'image60.jpg', 'image70.jpg', 'image80.jpg', 'image90.jpg', 'image100.jpg'],
+    rqcst: ['image1.jpg', 'image2.jpg', 'image3.png', 'image4.jpg', 'image40.jpg', 'image5.jpg', 'image50.jpg', 'image6.jpg', 'image60.jpg', 'image7.jpg', 'image8.jpg', 'image80.jpg', 'image9.jpg', 'image90.jpg', 'image10.jpg', 'image100.jpg', 'image11.jpg', 'image110.jpg', 'image12.jpg', 'image120.jpg', 'image13.jpg', 'image130.jpg', 'image14.jpg', 'image15.jpg', 'image150.jpg', 'image16.jpg', 'image16.png', 'image17.jpg', 'image170.jpg', 'image18.jpg', 'image180.jpg', 'image19.jpg', 'image190.jpg', 'image20.jpg', 'image21.jpg', 'image21.png']
+  };
+  folders.forEach(function (f) {
+    var h2 = document.createElement('h2');
+    h2.textContent = 'assets/test-images/' + f + '/';
+    sheet.appendChild(h2);
+    manifest[f].forEach(function (name) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var img = document.createElement('img');
+      img.src = '../test-images/' + f + '/' + name;
+      img.alt = f + '/' + name;
+      var cap = document.createElement('div');
+      cap.className = 'name';
+      cap.textContent = f + '/' + name;
+      card.appendChild(img);
+      card.appendChild(cap);
+      sheet.appendChild(card);
+    });
+  });
+})();
+</script>
+</body>
+</html>
