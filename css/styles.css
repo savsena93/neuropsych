@@ -905,6 +905,16 @@ h1, h2, h3 {
   background: #f8fbfb;
 }
 
+.data-table th:last-child,
+.data-table td:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.data-table td:last-child .btn + .btn {
+  margin-left: 6px;
+}
+
 .status-label {
   display: inline-flex;
   align-items: center;
@@ -1000,5 +1010,393 @@ h1, h2, h3 {
   }
   .content {
     padding: 22px 16px 34px;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Login landing page
+--------------------------------------------------------------------- */
+.login-screen {
+  min-height: 100vh;
+  padding: clamp(20px, 5vw, 64px);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(124, 185, 181, 0.22), transparent 28%),
+    linear-gradient(118deg, #e7f0ef 0%, #f4f7f8 48%, #dce9e9 100%);
+}
+
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  align-items: stretch;
+  width: min(1180px, 100%);
+  min-height: min(720px, calc(100vh - 80px));
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 28px 80px rgba(18, 62, 73, 0.15);
+}
+
+.login-identity {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 560px;
+  padding: clamp(30px, 6vw, 72px);
+  overflow: hidden;
+  color: #f4fbfb;
+  background:
+    linear-gradient(145deg, rgba(16, 71, 80, 0.96), rgba(18, 62, 73, 0.98)),
+    #123e49;
+}
+
+.login-identity::after {
+  position: absolute;
+  right: -120px;
+  bottom: -150px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(184, 225, 220, 0.25);
+  border-radius: 50%;
+  box-shadow: 0 0 0 36px rgba(184, 225, 220, 0.05), 0 0 0 72px rgba(184, 225, 220, 0.035);
+  content: "";
+}
+
+.brand-mark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(220, 247, 243, 0.5);
+  border-radius: 14px;
+  color: #d9f3ef;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.login-eyebrow,
+.login-kicker {
+  margin: 0 0 16px;
+  color: #78c2bd;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.login-identity h1 {
+  position: relative;
+  z-index: 1;
+  margin: auto 0 22px;
+  color: #fff;
+  max-width: 100%;
+  font-size: clamp(2.1rem, 4.3vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+  overflow-wrap: break-word;
+}
+
+.login-identity h1 em {
+  color: #9bd6d0;
+  font-style: normal;
+}
+
+.login-lede {
+  position: relative;
+  z-index: 1;
+  max-width: 470px;
+  margin: 0 0 36px;
+  color: #c4dddd;
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.login-principles {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  max-width: 480px;
+}
+
+.login-principles div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(196, 221, 221, 0.2);
+  color: #d6e9e8;
+  font-size: 0.84rem;
+}
+
+.login-principles strong {
+  color: #78c2bd;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.login-footer-note {
+  position: relative;
+  z-index: 1;
+  margin: 42px 0 0;
+  color: #8fb8b8;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-panel {
+  align-self: center;
+  justify-self: center;
+  max-width: 440px;
+  margin: clamp(20px, 5vw, 64px);
+  padding: clamp(26px, 4vw, 42px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.login-panel h2 {
+  margin-bottom: 8px;
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+}
+
+.login-panel .app-subtitle {
+  margin-bottom: 28px;
+}
+
+.login-panel .field__input--large {
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-align: left;
+}
+
+.login-help {
+  margin: 22px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (max-width: 780px) {
+  .login-screen {
+    padding: 0;
+  }
+
+  .login-shell {
+    display: block;
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .login-identity {
+    min-height: 340px;
+    padding: 28px 24px 32px;
+  }
+
+  .login-identity h1 {
+    margin-top: 44px;
+    font-size: clamp(2rem, 11vw, 3.2rem);
+  }
+
+  .login-lede {
+    margin-bottom: 24px;
+    font-size: 0.94rem;
+  }
+
+  .login-principles {
+    display: none;
+  }
+
+  .login-footer-note {
+    margin-top: 24px;
+  }
+
+  .login-panel {
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Authenticated workspace
+--------------------------------------------------------------------- */
+[data-view]:not([data-view="login"]) {
+  background: var(--color-bg);
+}
+
+[data-view]:not([data-view="login"]) .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+[data-view]:not([data-view="login"]) .topbar::before {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 4px;
+  border: 1px solid rgba(220, 247, 243, 0.45);
+  border-radius: 9px;
+  color: #bde4df;
+  content: "NP";
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+[data-view]:not([data-view="login"]) .topbar__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+}
+
+[data-view]:not([data-view="login"]) .topbar .btn {
+  flex: 0 0 auto;
+}
+
+[data-view]:not([data-view="login"]) .tabs {
+  position: sticky;
+  top: 72px;
+  z-index: 19;
+}
+
+[data-view]:not([data-view="login"]) .content {
+  min-height: calc(100vh - 124px);
+  padding-top: clamp(28px, 5vw, 52px);
+}
+
+[data-view="adminDashboard"] .content::before,
+[data-view="examinerDashboard"] .content::before {
+  display: block;
+  margin-bottom: 28px;
+  color: var(--color-primary);
+  content: "WORKSPACE OVERVIEW";
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+[data-view="adminDashboard"] .stat-row {
+  margin-bottom: 34px;
+}
+
+[data-view="adminDashboard"] .hint {
+  max-width: 620px;
+  margin-top: 28px;
+}
+
+[data-view="adminUsers"] .content,
+[data-view="adminParticipants"] .content,
+[data-view="adminSessions"] .content,
+[data-view="adminAuditLog"] .content,
+[data-view="adminBackup"] .content,
+[data-view="examinerDashboard"] .content {
+  position: relative;
+}
+
+[data-view="adminUsers"] .section-heading:first-child,
+[data-view="adminParticipants"] .section-heading:first-child,
+[data-view="adminSessions"] .section-heading:first-child,
+[data-view="adminAuditLog"] .section-heading:first-child,
+[data-view="adminBackup"] .section-heading:first-child {
+  margin-top: 0;
+  font-size: 1.65rem;
+  letter-spacing: -0.025em;
+}
+
+[data-view="adminUsers"] .data-table,
+[data-view="adminParticipants"] .data-table,
+[data-view="adminSessions"] .data-table,
+[data-view="adminAuditLog"] .data-table,
+[data-view="examinerDashboard"] .data-table {
+  margin-top: 18px;
+}
+
+[data-view="adminUsers"] .form-row {
+  align-items: stretch;
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+[data-view="adminUsers"] .form-row .field {
+  flex: 1 1 180px;
+}
+
+[data-view="adminUsers"] .form-row .btn {
+  align-self: end;
+}
+
+[data-view="adminBackup"] .button-row {
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+
+[data-view="examinerDashboard"] .content > .button-row:first-child {
+  justify-content: flex-end;
+  margin: 0 0 34px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+[data-view="examinerDashboard"] .section-heading {
+  margin-top: 34px;
+}
+
+[data-view="testSelection"] .panel,
+[data-view="participantIntake"] .panel,
+[data-view="consentCapture"] .panel,
+[data-view="changePin"] .panel {
+  max-width: 640px;
+}
+
+[data-view="testSelection"] .app-title,
+[data-view="participantIntake"] .app-title,
+[data-view="consentCapture"] .app-title,
+[data-view="changePin"] .app-title {
+  font-size: 1.8rem;
+  letter-spacing: -0.025em;
+}
+
+[data-view="testRunner"] .topbar,
+[data-view="sessionSummary"] .topbar {
+  gap: 10px;
+}
+
+[data-view="testRunner"] .content,
+[data-view="sessionSummary"] .content {
+  padding-top: 32px;
+}
+
+[data-view="sessionSummary"] .section-heading {
+  margin-top: 0;
+  font-size: 1.7rem;
+}
+
+@media (max-width: 700px) {
+  [data-view]:not([data-view="login"]) .tabs {
+    top: 108px;
+  }
+
+  [data-view="adminUsers"] .form-row {
+    padding: 16px;
+  }
+
+  [data-view="adminUsers"] .form-row .btn {
+    align-self: stretch;
   }
 }

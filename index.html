@@ -9,32 +9,48 @@
 <body>
 
 <!-- ======================= LOGIN ======================= -->
-<section data-view="login" class="screen screen--centered">
-  <div class="panel panel--narrow">
-    <h1 class="app-title">Neuropsychological Assessment Toolkit</h1>
-    <p class="app-subtitle">Offline-ready feasibility prototype. Participant names are not stored.</p>
+<section data-view="login" class="screen login-screen">
+  <div class="login-shell">
+    <div class="login-identity">
+      <div class="brand-mark" aria-hidden="true">NP</div>
+      <p class="login-eyebrow">UHAS | PSYC 728</p>
+      <h1>Neuropsychological<br><em>Assessment Toolkit</em></h1>
+      <p class="login-lede">A focused workspace for structured cognitive assessment, participant privacy, and examiner review.</p>
+      <div class="login-principles">
+        <div><strong>01</strong><span>Designed for tablet-based assessment</span></div>
+        <div><strong>02</strong><span>Offline-ready with local data storage</span></div>
+        <div><strong>03</strong><span>Participant codes instead of names</span></div>
+      </div>
+      <p class="login-footer-note">Feasibility prototype | Academic evaluation</p>
+    </div>
 
-    <form id="loginForm" class="stack">
-      <label class="field">
-        <span class="field__label">Log in as</span>
-        <select id="loginRole" class="field__input field__input--large">
-          <option value="admin">Administrator</option>
-          <option value="examiner">Examiner</option>
-          <option value="examinee">Examinee: taking a test</option>
-        </select>
-      </label>
-      <label class="field" id="loginPinField">
-        <span class="field__label">Enter your PIN</span>
-        <input id="loginPin" type="password" inputmode="numeric" autocomplete="off" class="field__input field__input--large" placeholder="••••">
-      </label>
-      <label class="field" id="loginCodeField" hidden>
-        <span class="field__label">Enter the participant code your examiner gave you</span>
-        <input id="loginCode" type="text" autocomplete="off" class="field__input field__input--large" placeholder="e.g. P-014">
-      </label>
-      <p id="loginError" class="banner banner--error" hidden></p>
-      <button type="submit" class="btn btn--primary btn--large btn--block">Log in</button>
-    </form>
-    <p class="hint">Staff PINs are created by the administrator under Admin &rarr; Users. First run only: default administrator PIN is <strong>1234</strong>. Examinees log in with the participant code created at intake, sign consent, then take the tests selected with them.</p>
+    <div class="panel panel--narrow login-panel">
+      <p class="login-kicker">Workspace access</p>
+      <h2>Sign in to continue</h2>
+      <p class="app-subtitle">Choose your role to open the appropriate workspace.</p>
+
+      <form id="loginForm" class="stack">
+        <label class="field">
+          <span class="field__label">Role</span>
+          <select id="loginRole" class="field__input field__input--large">
+            <option value="admin">Administrator</option>
+            <option value="examiner">Examiner</option>
+            <option value="examinee">Examinee: taking a test</option>
+          </select>
+        </label>
+        <label class="field" id="loginPinField">
+          <span class="field__label">Staff PIN</span>
+          <input id="loginPin" type="password" inputmode="numeric" autocomplete="off" class="field__input field__input--large" placeholder="Enter PIN">
+        </label>
+        <label class="field" id="loginCodeField" hidden>
+          <span class="field__label">Participant code</span>
+          <input id="loginCode" type="text" autocomplete="off" class="field__input field__input--large" placeholder="For example, P-014">
+        </label>
+        <p id="loginError" class="banner banner--error" hidden></p>
+        <button type="submit" class="btn btn--primary btn--large btn--block">Open workspace</button>
+      </form>
+      <p class="hint login-help">Staff access is created by the administrator. Examinees use the participant code provided by the examiner.</p>
+    </div>
   </div>
 </section>
 
