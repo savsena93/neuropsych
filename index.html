@@ -114,10 +114,10 @@
   </nav>
   <main class="content">
     <h2 class="section-heading">Users</h2>
-    <table class="data-table">
-      <thead><tr><th>Name</th><th>Role</th><th>Created</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Name</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
       <tbody id="usersTableBody"></tbody>
-    </table>
+    </table></div>
 
     <h3 class="section-heading section-heading--minor">Add a user</h3>
     <form id="addUserForm" class="form-row">
@@ -156,10 +156,10 @@
   <main class="content">
     <h2 class="section-heading">All participants</h2>
     <p class="hint">Participants are identified by code only. Withdrawing consent permanently erases the participant data.</p>
-    <table class="data-table">
-      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th>Actions</th></tr></thead>
       <tbody id="adminParticipantsTable"></tbody>
-    </table>
+    </table></div>
   </main>
 </section>
 
@@ -179,10 +179,10 @@
   </nav>
   <main class="content">
     <h2 class="section-heading">All assessment records</h2>
-    <table class="data-table">
-      <thead><tr><th>Participant</th><th>Examiner</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Participant</th><th>Examiner</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th>Actions</th></tr></thead>
       <tbody id="adminSessionsTableBody"></tbody>
-    </table>
+    </table></div>
   </main>
 </section>
 
@@ -202,10 +202,10 @@
   </nav>
   <main class="content">
     <h2 class="section-heading">Audit log</h2>
-    <table class="data-table">
+    <div class="table-shell"><table class="data-table">
       <thead><tr><th>Time</th><th>Actor role</th><th>Action</th><th>Target</th><th>Reason</th></tr></thead>
       <tbody id="auditLogTableBody"></tbody>
-    </table>
+    </table></div>
   </main>
 </section>
 
@@ -253,16 +253,16 @@
     </div>
 
     <h2 class="section-heading">Your participants</h2>
-    <table class="data-table">
-      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Code</th><th>Age</th><th>Sex</th><th>Education</th><th>Consent</th><th>Enrolled</th><th>Actions</th></tr></thead>
       <tbody id="examinerParticipantsTable"></tbody>
-    </table>
+    </table></div>
 
     <h2 id="examinerRecords" class="section-heading">Your assessment records</h2>
-    <table class="data-table">
-      <thead><tr><th>Participant</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Participant</th><th>Tests</th><th>Mode</th><th>Status</th><th>Started</th><th>Actions</th></tr></thead>
       <tbody id="examinerSessionsTableBody"></tbody>
-    </table>
+    </table></div>
   </main>
 </section>
 
@@ -337,10 +337,10 @@
   <main class="content">
     <h2 class="section-heading">Incomplete assessments</h2>
     <p class="hint">These sessions were started but not finished. Resume continues where each one stopped. Completed sessions are not listed here.</p>
-    <table class="data-table">
-      <thead><tr><th>Participant</th><th>Tests</th><th>Started</th><th></th></tr></thead>
+    <div class="table-shell"><table class="data-table">
+      <thead><tr><th>Participant</th><th>Tests</th><th>Started</th><th>Actions</th></tr></thead>
       <tbody id="resumeSessionsTableBody"></tbody>
-    </table>
+    </table></div>
     <div class="button-row">
       <button id="startNewAssessmentBtn" class="btn btn--primary">Start a new assessment instead</button>
     </div>

@@ -118,6 +118,16 @@
     while (el.firstChild) el.removeChild(el.firstChild);
   }
 
+  function renderEmptyRow(tbody, colspan, message) {
+    var row = document.createElement('tr');
+    var cell = document.createElement('td');
+    cell.className = 'empty-state';
+    cell.colSpan = colspan;
+    cell.textContent = message;
+    row.appendChild(cell);
+    tbody.appendChild(row);
+  }
+
   function showBanner(el, message, kind) {
     el.textContent = message;
     el.className = 'banner banner--' + (kind || 'info');
@@ -396,6 +406,10 @@
     return DB.listUsers().then(function (users) {
       var tbody = byId('usersTableBody');
       clearChildren(tbody);
+      if (!users.length) {
+        renderEmptyRow(tbody, 4, 'No staff accounts have been added.');
+        return;
+      }
       var primaryAdmin = users.filter(function (u) { return u.role === 'admin'; })
         .sort(function (a, b) { return String(a.createdAt).localeCompare(String(b.createdAt)); })[0];
       users.forEach(function (user) {
@@ -450,6 +464,10 @@
     ]).then(function (results) {
       var tbody = byId('adminSessionsTableBody');
       clearChildren(tbody);
+      if (!results[1].length) {
+        renderEmptyRow(tbody, 7, 'No assessment records yet.');
+        return;
+      }
       var userName = {};
       results[0].forEach(function (u) { userName[u.id] = u.name; });
 
@@ -508,6 +526,10 @@
     return DB.getAuditLog().then(function (log) {
       var tbody = byId('auditLogTableBody');
       clearChildren(tbody);
+      if (!log.length) {
+        renderEmptyRow(tbody, 5, 'No audit activity has been recorded.');
+        return;
+      }
       log.slice().reverse().forEach(function (entry) {
         var tr = document.createElement('tr');
         [
@@ -535,6 +557,10 @@
       var list = all;
       if (!showAll) {
         list = list.filter(function (p) { return p.createdBy === user.id; });
+      }
+      if (!list.length) {
+        renderEmptyRow(tbody, 7, showAll ? 'No participants have been enrolled.' : 'You have no participants yet.');
+        return;
       }
       list.forEach(function (p) {
         var tr = document.createElement('tr');
@@ -591,6 +617,10 @@
       renderParticipantsTable(byId('examinerParticipantsTable'), false);
       var tbody = byId('examinerSessionsTableBody');
       clearChildren(tbody);
+      if (!results[1].length) {
+        renderEmptyRow(tbody, 6, 'No assessment records yet.');
+        return;
+      }
       results[1].forEach(function (session) {
         var tr = document.createElement('tr');
         [
@@ -641,7 +671,12 @@
   function renderResumeScreen() {
     var tbody = byId('resumeSessionsTableBody');
     clearChildren(tbody);
-    TestFlow.getResumeList().forEach(function (session) {
+    var sessions = TestFlow.getResumeList();
+    if (!sessions.length) {
+      renderEmptyRow(tbody, 4, 'There are no incomplete assessments to resume.');
+      return;
+    }
+    sessions.forEach(function (session) {
       var tr = document.createElement('tr');
       [
         session.participantCode,
