@@ -171,6 +171,8 @@ function userFromRow(r) {
 function participantFromRow(r) {
   return {
     code: r.code,
+    accessPin: r.participant_pin || null,
+    assignedTests: JSON.parse(r.assigned_tests || '[]'),
     age: r.age,
     sex: r.sex,
     education: r.education,
@@ -240,10 +242,12 @@ function emptyConsent() {
 
 function insertParticipantStmt(env, p) {
   return env.DB.prepare(
-    'INSERT INTO participants (code, age, sex, education, referral, date_enrolled, consent, created_by, created_at) ' +
-    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO participants (code, participant_pin, assigned_tests, age, sex, education, referral, date_enrolled, consent, created_by, created_at) ' +
+    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
   ).bind(
     p.code,
+    p.accessPin || null,
+    JSON.stringify(p.assignedTests || []),
     p.age !== undefined ? p.age : null,
     p.sex !== undefined ? p.sex : null,
     p.education !== undefined ? p.education : null,
@@ -289,11 +293,15 @@ async function handleLogin(request, env) {
   if (body.role === 'examinee') {
     var code = (body.code || '').trim();
     if (!code) return fail(400, 'Enter your participant code.');
+    if (!body.pin) return fail(400, 'Enter your participant PIN.');
     var prow = await env.DB.prepare('SELECT * FROM participants WHERE code = ?').bind(code).first();
     if (!prow) {
       return fail(401, 'No participant found with that code. Ask your examiner to check it.');
     }
     var participant = participantFromRow(prow);
+    if (participant.accessPin && participant.accessPin !== hashPin(body.pin)) {
+      return fail(401, 'Incorrect participant PIN.');
+    }
     var examinee = {
       id: 'examinee:' + code,
       role: 'examinee',
@@ -324,6 +332,8 @@ async function handleLogin(request, env) {
 // exactly like the local backend's first run. The conditional INSERT is
 // race-safe against two devices booting the fresh deployment at once.
 async function handleBootstrap(env) {
+  try { await env.DB.prepare('ALTER TABLE participants ADD COLUMN participant_pin TEXT').run(); } catch (e) {}
+  try { await env.DB.prepare("ALTER TABLE participants ADD COLUMN assigned_tests TEXT NOT NULL DEFAULT '[]'").run(); } catch (e) {}
   var defaultPin = '1234';
   var result = await env.DB.prepare(
     'INSERT INTO users (id, role, name, pin, must_change_pin, created_at) ' +
@@ -465,6 +475,8 @@ async function handleCreateParticipant(request, env, actor) {
   }
   var record = {
     code: body.code,
+    accessPin: hashPin(body.accessPin || body.code),
+    assignedTests: body.assignedTests || [],
     age: body.age !== undefined ? body.age : null,
     sex: body.sex !== undefined ? body.sex : null,
     education: body.education !== undefined ? body.education : null,
@@ -476,7 +488,7 @@ async function handleCreateParticipant(request, env, actor) {
   };
   await insertParticipantStmt(env, record).run();
   await audit(env, actor, 'participant_create', 'participant', record.code, null, null);
-  return json({ participant: record });
+  return json({ participant: Object.assign({}, record, { issuedPin: body.accessPin || body.code }) });
 }
 
 // GET /api/participants/:code — admins any participant; examiners only
@@ -550,13 +562,20 @@ async function handleListSessions(env, actor) {
 // session to the examiner who enrolled the participant.
 async function handleCreateSession(request, env, actor) {
   var body = await readJson(request);
+  var participantRow = body && body.participantCode
+    ? await env.DB.prepare('SELECT * FROM participants WHERE code = ?').bind(body.participantCode).first() : null;
+  if (!participantRow) return fail(400, 'Participant assignment not found.');
+  var participant = participantFromRow(participantRow);
+  if (actor.role === 'examinee' && participant.code !== String(actor.id).replace(/^examinee:/, '')) {
+    return fail(403, 'Not your participant assignment.');
+  }
   var session = {
     id: nextId('session'),
     participantCode: body ? body.participantCode : null,
     examinerId: body && body.examinerId !== undefined && body.examinerId !== null
       ? body.examinerId
       : actor.id,
-    testsSelected: (body && body.testsSelected) || [],
+    testsSelected: actor.role === 'examinee' ? participant.assignedTests : ((body && body.testsSelected) || []),
     status: 'in_progress',
     practiceMode: !!(body && body.practiceMode),
     startedAt: nowIso(),
@@ -622,9 +641,26 @@ async function handlePause(request, env, actor, sessionId) {
   var type = body && body.type ? body.type : 'pause';
   var entry = { type: type, reason: body ? body.reason : null, timestamp: nowIso() };
   found.session.pauses.push(entry);
-  await env.DB.prepare('UPDATE sessions SET pauses = ? WHERE id = ?')
-    .bind(JSON.stringify(found.session.pauses), sessionId).run();
+  if (type === 'pause') {
+    found.session.status = 'paused';
+    await env.DB.prepare('UPDATE sessions SET status = ?, pauses = ? WHERE id = ?')
+      .bind(found.session.status, JSON.stringify(found.session.pauses), sessionId).run();
+  } else {
+    await env.DB.prepare('UPDATE sessions SET pauses = ? WHERE id = ?')
+      .bind(JSON.stringify(found.session.pauses), sessionId).run();
+  }
   await audit(env, actor, 'session_' + type, 'session', sessionId, entry.reason, null);
+  return json({ session: found.session });
+}
+
+// POST /api/sessions/:id/resume — resume a session paused by staff.
+async function handleResume(env, actor, sessionId) {
+  var found = await loadSessionForActor(env, actor, sessionId);
+  if (found.error) return found.error;
+  if (found.session.status !== 'paused') return fail(400, 'Only a paused session can be resumed.');
+  found.session.status = 'in_progress';
+  await env.DB.prepare('UPDATE sessions SET status = ? WHERE id = ?').bind('in_progress', sessionId).run();
+  await audit(env, actor, 'session_resume', 'session', sessionId, null, null);
   return json({ session: found.session });
 }
 
@@ -867,6 +903,9 @@ export default {
         }
         if (segs.length === 4 && segs[3] === 'pause' && method === 'POST') {
           return await handlePause(request, env, actor, sid);
+        }
+        if (segs.length === 4 && segs[3] === 'resume' && method === 'POST') {
+          return await handleResume(env, actor, sid);
         }
         if (segs.length === 4 && segs[3] === 'complete' && method === 'POST') {
           return await handleComplete(request, env, actor, sid);

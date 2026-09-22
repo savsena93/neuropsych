@@ -528,6 +528,109 @@ h1, h2, h3 {
   flex-wrap: wrap;
 }
 
+.assessment-ready-panel {
+  max-width: 680px;
+}
+
+.assigned-tests-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.assigned-test {
+  padding: 14px 16px;
+  border: 1px solid #c6d9dc;
+  border-radius: 9px;
+  background: #f2f9f8;
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.credential-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.credential-grid > div {
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 9px;
+  background: #f7fafb;
+}
+
+.credential-grid span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.credential-grid strong {
+  display: block;
+  color: var(--color-primary-dark);
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+}
+
+.consent-text {
+  max-height: 390px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 18px 20px;
+  background: #fbfcfd;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.consent-text p {
+  margin: 0 0 14px;
+}
+
+.consent-text p:last-child {
+  margin-bottom: 0;
+}
+
+.consent-text strong {
+  color: var(--color-primary-dark);
+}
+
+[data-view="testRunner"] .content--narrow {
+  max-width: 760px;
+}
+
+[data-view="testRunner"] .item-frame__body {
+  min-height: 180px;
+}
+
+[data-view="testRunner"] .item-frame__footer {
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
+[data-view="testRunner"] .item-frame__footer .btn--primary {
+  min-width: 150px;
+}
+
+@media (max-width: 600px) {
+  .credential-grid {
+    grid-template-columns: 1fr;
+  }
+  .consent-text {
+    max-height: 330px;
+  }
+}
+
 .stimulus-placeholder {
   border: 2px dashed var(--color-border);
   border-radius: var(--radius);

@@ -46,6 +46,10 @@
           <span class="field__label">Participant code</span>
           <input id="loginCode" type="text" autocomplete="off" class="field__input field__input--large" placeholder="For example, P-014">
         </label>
+        <label class="field" id="loginParticipantPinField" hidden>
+          <span class="field__label">Participant PIN</span>
+          <input id="loginParticipantPin" type="password" inputmode="numeric" autocomplete="off" class="field__input field__input--large" placeholder="Enter participant PIN">
+        </label>
         <p id="loginError" class="banner banner--error" hidden></p>
         <button type="submit" class="btn btn--primary btn--large btn--block">Open workspace</button>
       </form>
@@ -275,6 +279,9 @@
       <label class="field"><span class="field__label">Participant code</span>
         <input id="intakeCode" type="text" required class="field__input" placeholder="e.g. P-014">
       </label>
+      <label class="field"><span class="field__label">Participant PIN</span>
+        <input id="intakeParticipantPin" type="password" inputmode="numeric" minlength="4" required class="field__input" placeholder="Create a PIN for the participant">
+      </label>
       <label class="field"><span class="field__label">Age</span>
         <input id="intakeAge" type="number" min="0" max="120" required class="field__input">
       </label>
@@ -291,6 +298,7 @@
       <label class="field"><span class="field__label">Diagnosis / referral reason</span>
         <textarea id="intakeReferral" class="field__input field__input--textarea" rows="2"></textarea>
       </label>
+      <p class="hint">Give the participant the code and PIN separately. They will use both to return later, complete consent, and start the assigned assessment.</p>
       <p id="intakeError" class="banner banner--error" hidden></p>
       <div class="button-row">
         <button type="button" id="intakeCancelBtn" class="btn btn--ghost">Cancel</button>
@@ -300,16 +308,48 @@
   </div>
 </section>
 
+<section data-view="participantCreated" class="screen screen--centered" hidden>
+  <div class="panel assessment-ready-panel">
+    <p class="login-kicker">Assessment prepared</p>
+    <h1 class="app-title">Participant access is ready</h1>
+    <p class="app-subtitle">Give these credentials to the participant. Keep the PIN private and do not store a participant name in the app.</p>
+    <div class="credential-grid">
+      <div><span>Participant code</span><strong id="createdParticipantCode">Not available</strong></div>
+      <div><span>Participant PIN</span><strong id="createdParticipantPin">Not available</strong></div>
+    </div>
+    <div id="createdAssignedTests" class="assigned-tests-summary"></div>
+    <div class="button-row"><button id="participantCreatedDoneBtn" type="button" class="btn btn--primary">Return to workspace</button></div>
+  </div>
+</section>
+
+<!-- ======================= ASSESSMENT READY ======================= -->
+<section data-view="assessmentReady" class="screen screen--centered" hidden>
+  <div class="panel assessment-ready-panel">
+    <p class="login-kicker">Participant workspace</p>
+    <h1 class="app-title">You are ready to begin</h1>
+    <p class="app-subtitle">Please complete the assessment in one sitting where possible. Your examiner can pause, resume, or stop the session from their workspace.</p>
+    <div id="assignedTestsSummary" class="assigned-tests-summary"></div>
+    <div class="banner banner--info">Your answers and drawings are saved for examiner review. Scores are not shown on this device after completion.</div>
+    <div class="button-row">
+      <button id="beginAssessmentBtn" type="button" class="btn btn--primary btn--large">Begin assessment</button>
+      <button id="readyLogoutBtn" type="button" class="btn btn--ghost">Log out</button>
+    </div>
+  </div>
+</section>
+
 <!-- ======================= CONSENT CAPTURE ======================= -->
 <section data-view="consentCapture" class="screen screen--centered" hidden>
   <div class="panel">
     <h1 class="app-title">Informed consent</h1>
     <p class="app-subtitle">Participant code: <strong id="consentParticipantCode">Not assigned</strong></p>
-    <p class="consent-text">
-      [Placeholder consent text. Replace this with the approved informed-consent script for the study.]
-      Please read the consent information aloud to the participant, then ask them to sign below
-      using their finger or a stylus.
-    </p>
+    <div class="consent-text">
+      <p><strong>Purpose.</strong> You are being invited to take part in a PSYC 728 course demonstration of an electronic neuropsychological assessment toolkit developed at the University of Health and Allied Sciences. This demonstration is intended to evaluate the usability of the prototype, not to provide a medical diagnosis.</p>
+      <p><strong>What will happen.</strong> An examiner will assign one or more of the following instruments: the Montreal Cognitive Assessment (MoCA), Revised Quick Cognitive Screening Test (RQCST), Rey Complex Figure, Trail-Making Test (TMT), and Brief Symptom Inventory-18 (BSI-18). You may answer questions verbally or in writing, select questionnaire responses, and use a finger or stylus to draw where requested. The examiner may read some instructions aloud.</p>
+      <p><strong>Time and records.</strong> The assessment may include timed Trail-Making and Rey drawing activities. Your responses, drawings, completion times, and the examiner's scores will be stored under your participant code for course evaluation. The examiner and administrator can review the results and create a combined assessment report.</p>
+      <p><strong>Voluntary participation.</strong> Taking part is voluntary. You may decline any activity, ask questions, pause, or stop at any time without penalty. You may withdraw your consent and request erasure of the participant record and associated assessment data.</p>
+      <p><strong>Privacy and limits.</strong> The application uses a participant code rather than a name. This is an educational feasibility prototype and is not a clinical diagnostic service. Results should not be used alone to make health, employment, academic, or treatment decisions. Data may be stored locally on the assessment device or in the configured course demonstration deployment.</p>
+      <p>Please ask the examiner any questions before signing. By selecting the confirmation below and signing, you indicate that the information has been explained to you, that you understand what participation involves, and that you freely agree to take part in this course demonstration.</p>
+    </div>
     <label class="checkbox-row">
       <input id="consentUnderstoodCheckbox" type="checkbox">
       <span>The participant confirms they understand and agree to take part.</span>
@@ -413,6 +453,7 @@
     <div id="summaryTestBlocks" class="stack"></div>
     <div class="button-row no-print">
       <button id="printReportBtn" class="btn btn--secondary">Print / Save as PDF</button>
+      <button id="downloadReportBtn" class="btn btn--primary">Download PDF report</button>
       <button id="summaryFinishBtn" class="btn btn--primary">Finish</button>
     </div>
   </main>
@@ -436,6 +477,8 @@
 <script src="js/tests/rey.js"></script>
 <script src="js/tests/tmt.js"></script>
 <script src="js/tests/bsi18.js"></script>
+
+<script src="lib/jspdf.umd.min.js"></script>
 
 <script src="js/test-flow.js"></script>
 <script src="js/app.js"></script>

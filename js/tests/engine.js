@@ -179,6 +179,18 @@ var ItemEngine = (function () {
         footer.appendChild(skipBtn);
       }
 
+      if (index > 0 && actor && actor.role !== 'examinee') {
+        var backBtn = document.createElement('button');
+        backBtn.type = 'button';
+        backBtn.className = 'btn btn--ghost btn--small';
+        backBtn.textContent = 'Back';
+        backBtn.addEventListener('click', function () {
+          index -= 1;
+          renderCurrentItem();
+        });
+        footer.insertBefore(backBtn, footer.firstChild);
+      }
+
       return { root: root, body: body, footer: footer };
     }
 
@@ -787,11 +799,13 @@ var ItemEngine = (function () {
 
     function pauseSession(reason) {
       paused = true;
-      DB.logPause(actor, sessionId, reason, 'pause');
+      if (typeof DB.pauseSession === 'function') DB.pauseSession(actor, sessionId, reason);
+      else DB.logPause(actor, sessionId, reason, 'pause');
     }
 
     function resumeSession() {
       paused = false;
+      if (typeof DB.resumeSession === 'function') DB.resumeSession(actor, sessionId);
     }
 
     function finishTest() {

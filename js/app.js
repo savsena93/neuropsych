@@ -25,6 +25,7 @@
       wireGenericBackButtons();
       wireResumeScreen();
       wireLiveView();
+      wireAssessmentReady();
       TestFlow.init();
 
       var restoredUser = Auth.getCurrentUser();
@@ -70,17 +71,19 @@
       onEnter: renderExaminerDashboard
     });
     Router.register('testSelection', {
-      roles: ['admin', 'examiner', 'examinee'],
+      roles: ['admin', 'examiner'],
       onEnter: TestFlow.resetSelectionForm
     });
     Router.register('participantIntake', {
       roles: ['admin', 'examiner'],
       onEnter: function () { intakeSubmitted = false; }
     });
+    Router.register('participantCreated', { roles: ['admin', 'examiner'], onEnter: renderParticipantCreated });
     Router.register('consentCapture', {
-      roles: ['admin', 'examiner', 'examinee'],
+      roles: ['examinee'],
       onEnter: prepareConsentCanvas
     });
+    Router.register('assessmentReady', { roles: ['examinee'], onEnter: renderAssessmentReady });
     Router.register('testRunner', {
       roles: ['admin', 'examiner', 'examinee'],
       onEnter: configureRunnerControls
@@ -199,6 +202,8 @@
     var codeInput = byId('loginCode');
     var pinField = byId('loginPinField');
     var codeField = byId('loginCodeField');
+    var participantPinField = byId('loginParticipantPinField');
+    var participantPinInput = byId('loginParticipantPin');
     var error = byId('loginError');
 
     // Staff (admin/examiner) log in with a PIN; examinees log in with the
@@ -207,6 +212,7 @@
       var examinee = roleSelect.value === 'examinee';
       pinField.hidden = examinee;
       codeField.hidden = !examinee;
+      participantPinField.hidden = !examinee;
     });
 
     form.addEventListener('submit', function (e) {
@@ -214,7 +220,8 @@
       var credentials = {
         role: roleSelect.value,
         pin: pinInput.value.trim(),
-        code: codeInput.value.trim()
+        code: codeInput.value.trim(),
+        participantPin: participantPinInput.value.trim()
       };
       if (credentials.role !== 'examinee' && !credentials.pin) {
         showBanner(error, 'Enter your PIN.', 'error');
@@ -224,9 +231,14 @@
         showBanner(error, 'Enter the participant code your examiner gave you.', 'error');
         return;
       }
+      if (credentials.role === 'examinee' && !credentials.participantPin) {
+        showBanner(error, 'Enter the participant PIN.', 'error');
+        return;
+      }
       Auth.login(credentials).then(function (result) {
         pinInput.value = '';
         codeInput.value = '';
+        participantPinInput.value = '';
         if (!result.ok) {
           showBanner(error, result.error, 'error');
           return;
@@ -268,9 +280,10 @@
       return;
     }
     pendingParticipantCode = p.code;
+    TestFlow.setAssignedTests(p.assignedTests || []);
     DB.listSessions().then(function (sessions) {
       var mine = sessions.filter(function (s) {
-        return s.participantCode === p.code && s.status === 'in_progress' && !s.deleted;
+        return s.participantCode === p.code && (s.status === 'in_progress' || s.status === 'paused') && !s.deleted;
       });
       if (mine.length > 0) {
         TestFlow.setResumeList(mine);
@@ -278,7 +291,7 @@
         return;
       }
       if (p.consent && p.consent.signedAt) {
-        Router.navigate('testSelection');
+        Router.navigate('assessmentReady');
       } else {
         Router.navigate('consentCapture');
       }
@@ -624,11 +637,17 @@
         // SRS: interrupted sessions resume; examiners watch in-progress
         // assessments draw in real time.
         var tdActions = document.createElement('td');
-        if (session.status === 'in_progress') {
+        if (session.status === 'in_progress' || session.status === 'paused') {
           var resumeBtn = document.createElement('button');
           resumeBtn.className = 'btn btn--secondary btn--small';
-          resumeBtn.textContent = 'Resume';
-          resumeBtn.addEventListener('click', function () { TestFlow.resumeSession(session); });
+          resumeBtn.textContent = session.status === 'paused' ? 'Resume' : 'Open';
+          resumeBtn.addEventListener('click', function () {
+            if (session.status === 'paused') {
+              DB.resumeSession(Auth.getCurrentUser(), session.id).then(function () { TestFlow.resumeSession(session); });
+            } else {
+              TestFlow.resumeSession(session);
+            }
+          });
           tdActions.appendChild(resumeBtn);
 
           var watchBtn = document.createElement('button');
@@ -636,6 +655,24 @@
           watchBtn.textContent = 'Watch live';
           watchBtn.addEventListener('click', function () { Router.navigate('liveView', { sessionId: session.id }); });
           tdActions.appendChild(watchBtn);
+          var pauseBtn = document.createElement('button');
+          pauseBtn.className = 'btn btn--ghost btn--small';
+          pauseBtn.textContent = 'Pause';
+          pauseBtn.addEventListener('click', function () {
+            AppDialogs.requestReason('Pause assessment', 'Pause the participant session while keeping its saved progress.', function (reason) {
+              DB.logPause(Auth.getCurrentUser(), session.id, reason, 'pause').then(renderExaminerDashboard);
+            });
+          });
+          tdActions.appendChild(pauseBtn);
+          var stopBtn = document.createElement('button');
+          stopBtn.className = 'btn btn--danger btn--small';
+          stopBtn.textContent = 'Stop';
+          stopBtn.addEventListener('click', function () {
+            AppDialogs.requestReason('Stop assessment', 'Stopped assessments remain recorded and cannot be resumed.', function (reason) {
+              DB.stopSession(Auth.getCurrentUser(), session.id, reason).then(renderExaminerDashboard);
+            });
+          });
+          tdActions.appendChild(stopBtn);
         } else if (session.status === 'completed') {
           var reportBtn = document.createElement('button');
           reportBtn.className = 'btn btn--secondary btn--small';
@@ -745,6 +782,7 @@
   // ---- participant intake + consent -----------------------------------
 
   var pendingParticipantCode = null;
+  var pendingParticipantPin = null;
 
   // "Submitted" latches, not simple busy flags: they must survive past a
   // single handler invocation returning, because the risk they guard
@@ -767,6 +805,7 @@
       if (intakeSubmitted) return;
       var data = {
         code: byId('intakeCode').value.trim(),
+        accessPin: byId('intakeParticipantPin').value.trim(),
         age: byId('intakeAge').value.trim(),
         sex: byId('intakeSex').value,
         education: byId('intakeEducation').value.trim(),
@@ -777,6 +816,11 @@
         showBanner(error, 'A participant code is required. Do not enter a name.', 'error');
         return;
       }
+      if (data.accessPin.length < 4) {
+        showBanner(error, 'Create a participant PIN of at least 4 digits.', 'error');
+        return;
+      }
+      data.assignedTests = TestFlow.getSelectedKeys();
       // Latch synchronously, before the write — the whole point of the
       // latch (see the comment at its declaration) is to survive past
       // this handler returning, which matters on the hosted backend
@@ -792,7 +836,8 @@
         showBanner(error, '', 'error');
         pendingParticipantCode = data.code;
         form.reset();
-        Router.navigate('consentCapture');
+        pendingParticipantPin = data.issuedPin || data.accessPin;
+        Router.navigate('participantCreated');
       }).catch(function (err) {
         intakeSubmitted = false;
         showBanner(error, err.message, 'error');
@@ -831,11 +876,46 @@
       DB.recordConsent(Auth.getCurrentUser(), code, dataUrl).then(function () {
         showBanner(error, '', 'error');
         pendingParticipantCode = null;
-        return TestFlow.startAfterConsent(code);
+        return TestFlow.showAssessmentReady(code);
       }).catch(function (err) {
         showBanner(error, err.message, 'error');
         consentSubmitted = false;
       });
+    });
+  }
+
+  function wireAssessmentReady() {
+    byId('beginAssessmentBtn').addEventListener('click', function () {
+      TestFlow.startPreparedAssessment();
+    });
+    byId('readyLogoutBtn').addEventListener('click', logout);
+    byId('participantCreatedDoneBtn').addEventListener('click', function () {
+      Router.navigate(Auth.isAdmin() ? 'adminDashboard' : 'examinerDashboard');
+    });
+  }
+
+  function renderAssessmentReady() {
+    var summary = byId('assignedTestsSummary');
+    clearChildren(summary);
+    var tests = TestFlow.getSelectedKeys();
+    tests.forEach(function (key) {
+      var item = document.createElement('div');
+      item.className = 'assigned-test';
+      item.textContent = key;
+      summary.appendChild(item);
+    });
+  }
+
+  function renderParticipantCreated() {
+    byId('createdParticipantCode').textContent = pendingParticipantCode || 'Not available';
+    byId('createdParticipantPin').textContent = pendingParticipantPin || 'Not available';
+    var summary = byId('createdAssignedTests');
+    clearChildren(summary);
+    TestFlow.getSelectedKeys().forEach(function (key) {
+      var item = document.createElement('div');
+      item.className = 'assigned-test';
+      item.textContent = key;
+      summary.appendChild(item);
     });
   }
 

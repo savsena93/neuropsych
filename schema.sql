@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS participants (
   code          TEXT PRIMARY KEY,
+  participant_pin TEXT,
+  assigned_tests TEXT NOT NULL DEFAULT '[]',
   age           TEXT,
   sex           TEXT,
   education     TEXT,

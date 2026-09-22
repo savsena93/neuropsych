@@ -8,13 +8,16 @@ D1** (serverless SQLite) for a shared, multi-device deployment — see
 **DEPLOYMENT.md**. The backend is chosen automatically from the page
 protocol; nothing in the front end changes.
 
+For continuing work from another account, see **HANDOFF.md**. It contains
+the clone, install, local D1, development, and Git workflow instructions.
+
 ## Where the five tests are
 
-Open `index.html`, log in, tap **+ New assessment**. That takes you
-through: **test selection** (checkboxes for all five tests + Practice
-Mode) → **participant intake** → **consent capture** → the **test
-runner**, which administers whichever tests you picked, one item at a
-time, in order → a scored **summary** screen at the end.
+The examiner prepares a participant assignment by selecting tests and
+creating a participant code/PIN. The examinee later logs in with those
+credentials, completes consent, explicitly begins the assigned tests, and
+works through the assessment one item at a time. The examiner can monitor
+the live session and access the scored report.
 
 Each test's content and scoring live in their own pair of files:
 

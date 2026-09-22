@@ -23,7 +23,7 @@
  * Data model (all keys prefixed npa_ = "neuropsych assessment"):
  *   npa_settings      -> { initialized, appVersion }
  *   npa_users         -> [ { id, role: 'admin'|'examiner', name, pin, createdAt } ]
- *   npa_participants  -> [ { code, age, sex, education, referral, dateEnrolled,
+ *   npa_participants  -> [ { code, accessPin, assignedTests, age, sex, education, referral, dateEnrolled,
  *                            consent: { signedAt, signatureDataUrl, withdrawn, withdrawnAt },
  *                            createdBy, createdAt } ]
  *   npa_sessions      -> [ { id, participantCode, examinerId, testsSelected,
@@ -189,10 +189,15 @@ var DB = (function () {
       }
       if (credentials.role === 'examinee') {
         var code = (credentials.code || '').trim();
+        var accessPin = (credentials.pin || '').trim();
         if (!code) return { ok: false, error: 'Enter your participant code.' };
+        if (!accessPin) return { ok: false, error: 'Enter your participant PIN.' };
         var p = getParticipant(code);
         if (!p) {
           return { ok: false, error: 'No participant found with that code. Ask your examiner to check it.' };
+        }
+        if (p.accessPin && p.accessPin !== hashPin(accessPin)) {
+          return { ok: false, error: 'Incorrect participant PIN.' };
         }
         return {
           ok: true,
@@ -292,6 +297,8 @@ var DB = (function () {
         sex: data.sex,
         education: data.education,
         referral: data.referral,
+        accessPin: hashPin(data.accessPin || data.code),
+        assignedTests: (data.assignedTests || []).slice(),
         dateEnrolled: data.dateEnrolled || nowIso(),
         consent: {
           signedAt: null,
@@ -305,7 +312,7 @@ var DB = (function () {
       list.push(record);
       writeRaw(KEYS.participants, list);
       audit(actor, 'participant_create', 'participant', record.code, null, null);
-      return record;
+      return Object.assign({}, record, { issuedPin: data.accessPin || data.code });
     }
 
     function recordConsent(actor, code, signatureDataUrl) {
@@ -359,6 +366,9 @@ var DB = (function () {
 
     function createSession(actor, data) {
       var list = listSessions();
+      var participant = data.participantCode ? getParticipant(data.participantCode) : null;
+      var assignedTests = actor && actor.role === 'examinee' && participant
+        ? (participant.assignedTests || []) : (data.testsSelected || []);
       var session = {
         id: nextId('session'),
         participantCode: data.participantCode,
@@ -366,7 +376,7 @@ var DB = (function () {
         // in and takes the test: the session is attributed to the examiner
         // who enrolled the participant.
         examinerId: data.examinerId !== undefined ? data.examinerId : (actor ? actor.id : null),
-        testsSelected: data.testsSelected || [],
+        testsSelected: assignedTests,
         status: 'in_progress',
         practiceMode: !!data.practiceMode,
         startedAt: nowIso(),
@@ -412,6 +422,29 @@ var DB = (function () {
       }
       writeRaw(KEYS.sessions, list);
       if (found) audit(actor, 'session_' + (type || 'pause'), 'session', sessionId, reason, null);
+      return found;
+    }
+
+    function pauseSession(actor, sessionId, reason) {
+      var found = logPause(actor, sessionId, reason, 'pause');
+      if (found) {
+        found.status = 'paused';
+        writeRaw(KEYS.sessions, listSessions());
+      }
+      return found;
+    }
+
+    function resumeSession(actor, sessionId) {
+      var list = listSessions();
+      var found = null;
+      list.forEach(function (session) {
+        if (session.id === sessionId && session.status === 'paused') {
+          session.status = 'in_progress';
+          found = session;
+        }
+      });
+      writeRaw(KEYS.sessions, list);
+      if (found) audit(actor, 'session_resume', 'session', sessionId, null, null);
       return found;
     }
 
@@ -557,6 +590,8 @@ var DB = (function () {
       saveLiveDrawing: saveLiveDrawing,
       getLiveDrawing: getLiveDrawing,
       logPause: logPause,
+      pauseSession: pauseSession,
+      resumeSession: resumeSession,
       completeSession: completeSession,
       stopSession: stopSession,
       deleteSession: deleteSession,
@@ -652,7 +687,8 @@ var DB = (function () {
     function createParticipant(actor, data) {
       return request('POST', '/api/participants', {
         code: data.code, age: data.age, sex: data.sex, education: data.education,
-        referral: data.referral, dateEnrolled: data.dateEnrolled
+        referral: data.referral, dateEnrolled: data.dateEnrolled,
+        accessPin: data.accessPin, assignedTests: data.assignedTests
       }).then(function (d) { return d.participant; });
     }
 
@@ -695,6 +731,16 @@ var DB = (function () {
     function logPause(actor, sessionId, reason, type) {
       return request('POST', '/api/sessions/' + encodeURIComponent(sessionId) + '/pause',
         { reason: reason, type: type }).then(function (d) { return d.session || null; });
+    }
+
+    function pauseSession(actor, sessionId, reason) {
+      return request('POST', '/api/sessions/' + encodeURIComponent(sessionId) + '/pause',
+        { reason: reason, type: 'pause' }).then(function (d) { return d.session || null; });
+    }
+
+    function resumeSession(actor, sessionId) {
+      return request('POST', '/api/sessions/' + encodeURIComponent(sessionId) + '/resume')
+        .then(function (d) { return d.session || null; });
     }
 
     function completeSession(actor, sessionId, scores) {
@@ -757,6 +803,8 @@ var DB = (function () {
       saveLiveDrawing: saveLiveDrawing,
       getLiveDrawing: getLiveDrawing,
       logPause: logPause,
+      pauseSession: pauseSession,
+      resumeSession: resumeSession,
       completeSession: completeSession,
       stopSession: stopSession,
       deleteSession: deleteSession,
@@ -815,6 +863,8 @@ var DB = (function () {
     saveLiveDrawing: function (sessionId, testKey, itemId, dataUrl) { return call('saveLiveDrawing', sessionId, testKey, itemId, dataUrl); },
     getLiveDrawing: function (sessionId) { return call('getLiveDrawing', sessionId); },
     logPause: function (actor, sessionId, reason, type) { return call('logPause', actor, sessionId, reason, type); },
+    pauseSession: function (actor, sessionId, reason) { return call('pauseSession', actor, sessionId, reason); },
+    resumeSession: function (actor, sessionId) { return call('resumeSession', actor, sessionId); },
     completeSession: function (actor, sessionId, scores) { return call('completeSession', actor, sessionId, scores); },
     deleteSession: function (actor, sessionId, reason) { return call('deleteSession', actor, sessionId, reason); },
     exportAll: function () { return call('exportAll'); },

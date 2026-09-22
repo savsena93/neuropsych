@@ -34,6 +34,8 @@ var TestFlow = (function () {
   var runQueue = [];
   var currentSession = null;
   var currentRunner = null;
+  var preparedParticipantCode = null;
+  var currentReport = null;
 
   // ---- test selection screen ------------------------------------------
 
@@ -76,6 +78,22 @@ var TestFlow = (function () {
     document.getElementById('practiceModeToggle').checked = false;
   }
 
+  function setAssignedTests(keys) {
+    selectedKeys = (keys || []).slice();
+    originalSelection = selectedKeys.slice();
+  }
+
+  function getSelectedKeys() { return selectedKeys.slice(); }
+
+  function showAssessmentReady(participantCode) {
+    preparedParticipantCode = participantCode;
+    Router.navigate('assessmentReady');
+  }
+
+  function startPreparedAssessment() {
+    return startAfterConsent(preparedParticipantCode);
+  }
+
   // ---- called by app.js once consent has been recorded -----------------
 
   function startAfterConsent(participantCode) {
@@ -86,7 +104,9 @@ var TestFlow = (function () {
     return DB.createSession(actor, {
       participantCode: participantCode,
       testsSelected: selectedKeys,
-      practiceMode: practiceMode
+      practiceMode: practiceMode,
+      examinerId: actor && actor.role === 'examinee' && actor.examineeParticipant
+        ? actor.examineeParticipant.createdBy : undefined
     }).then(function (session) {
       currentSession = session;
       originalSelection = selectedKeys.slice();
@@ -141,9 +161,16 @@ var TestFlow = (function () {
     selectedKeys = (session.testsSelected || []).slice();
     originalSelection = selectedKeys.slice();
     runQueue = remainingTests(session);
-    Router.navigate('testRunner');
-    setPracticeBanner('practiceBanner', !!session.practiceMode);
-    runNextTest();
+    var continueSession = function () {
+      Router.navigate('testRunner');
+      setPracticeBanner('practiceBanner', !!session.practiceMode);
+      runNextTest();
+    };
+    if (session.status === 'paused' && typeof DB.resumeSession === 'function') {
+      DB.resumeSession(Auth.getCurrentUser(), session.id).then(continueSession);
+    } else {
+      continueSession();
+    }
   }
 
   function remainingTests(session) {
@@ -205,6 +232,12 @@ var TestFlow = (function () {
   }
 
   function renderSummary(participantCode, scores, isPractice, allResponses) {
+    currentReport = {
+      participantCode: participantCode,
+      scores: scores,
+      isPractice: isPractice,
+      responses: allResponses
+    };
     document.getElementById('summaryParticipantCode').textContent = participantCode;
     setPracticeBanner('practiceBannerSummary', isPractice);
 
@@ -215,6 +248,7 @@ var TestFlow = (function () {
     // completed the session, show only a neutral hand-back message —
     // the scored report and the printed PDF stay with the examiner.
     var printBtn = document.getElementById('printReportBtn');
+    var downloadBtn = document.getElementById('downloadReportBtn');
     var summaryLogoutBtn = document.getElementById('summaryLogoutBtn');
     if (summaryLogoutBtn) summaryLogoutBtn.hidden = Auth.isExaminee();
     if (Auth.isExaminee()) {
@@ -228,9 +262,11 @@ var TestFlow = (function () {
       donePanel.appendChild(doneP);
       container.appendChild(donePanel);
       if (printBtn) printBtn.hidden = true;
+      if (downloadBtn) downloadBtn.hidden = true;
       return;
     }
     if (printBtn) printBtn.hidden = false;
+    if (downloadBtn) downloadBtn.hidden = false;
 
     originalSelection.forEach(function (key) {
       var result = scores[key];
@@ -350,6 +386,7 @@ var TestFlow = (function () {
     document.getElementById('printReportBtn').addEventListener('click', function () {
       window.print();
     });
+    document.getElementById('downloadReportBtn').addEventListener('click', downloadPdfReport);
     document.getElementById('summaryFinishBtn').addEventListener('click', function () {
       resetSelectionForm();
       selectedKeys = [];
@@ -374,6 +411,59 @@ var TestFlow = (function () {
     });
   }
 
+  function downloadPdfReport() {
+    if (!currentReport || !window.jspdf || !window.jspdf.jsPDF) return;
+    var pdf = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' });
+    var margin = 42;
+    var width = 595 - margin * 2;
+    var y = 48;
+
+    function write(text, size, bold) {
+      pdf.setFont('helvetica', bold ? 'bold' : 'normal');
+      pdf.setFontSize(size || 9);
+      var lines = pdf.splitTextToSize(String(text), width);
+      lines.forEach(function (line) {
+        if (y > 790) { pdf.addPage(); y = 48; }
+        pdf.text(line, margin, y);
+        y += (size || 9) + 4;
+      });
+    }
+
+    write('Neuropsychological Assessment Toolkit', 16, true);
+    write('Assessment report | Participant: ' + currentReport.participantCode, 11, true);
+    if (currentReport.isPractice) write('PRACTICE MODE', 10, true);
+    y += 8;
+
+    originalSelection.forEach(function (key) {
+      var module = window.Tests[key];
+      var result = currentReport.scores[key] || {};
+      var responses = currentReport.responses[key] || {};
+      if (y > 730) { pdf.addPage(); y = 48; }
+      write(module.name, 13, true);
+      if (typeof result.raw === 'number' && typeof result.max === 'number') {
+        write('Score: ' + result.raw + ' / ' + result.max, 10, true);
+      } else if (result.partA && result.partB) {
+        write('Part A: ' + (result.partA.timeSeconds === null ? 'not completed' : result.partA.timeSeconds + ' seconds') +
+          ' | Part B: ' + (result.partB.timeSeconds === null ? 'not completed' : result.partB.timeSeconds + ' seconds'), 10, true);
+      }
+      if (result.interpretation) write(result.interpretation, 9, false);
+      (module.items || []).forEach(function (item) {
+        var response = responses[item.id];
+        write(item.id + ': ' + responseSummaryText(item, response) +
+          ' | points: ' + (response && typeof response.points === 'number' ? response.points : 0), 8, false);
+        if (response && response.drawingDataUrl) {
+          if (y > 610) { pdf.addPage(); y = 48; }
+          try {
+            pdf.addImage(response.drawingDataUrl, 'PNG', margin, y, 220, 130, undefined, 'FAST');
+            y += 142;
+          } catch (e) {}
+        }
+      });
+      y += 12;
+    });
+    pdf.save('assessment-' + currentReport.participantCode + '.pdf');
+  }
+
   function init() {
     wireTestSelection();
     wirePauseControls();
@@ -388,6 +478,10 @@ var TestFlow = (function () {
     setResumeList: setResumeList,
     getResumeList: getResumeList,
     getCurrentSession: getCurrentSession,
-    viewSessionReport: viewSessionReport
+    viewSessionReport: viewSessionReport,
+    setAssignedTests: setAssignedTests,
+    getSelectedKeys: getSelectedKeys,
+    showAssessmentReady: showAssessmentReady,
+    startPreparedAssessment: startPreparedAssessment
   };
 })();
