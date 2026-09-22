@@ -32,13 +32,12 @@
  * `examinerOnly` — the examinee sees only the domain label. Visual items
  * the examinee must see (dots, figures, choice grids) show normally.
  *
- * IMAGES: items 14, 18, 19, 25-29, 38-42 and 43-47 need stimulus images
- * from the printed sheet. The 36 images extracted from the source
- * document are in assets/test-images/rqcst/ — verify which file is
- * which via assets/test-images/contact-sheet.html, then set
- * `stimulusImage` on the items below (best-guess mappings are in place
- * where a reasonable candidate existed, marked VERIFY; items 16 and the
- * trail-style line task are drawn programmatically and need no image).
+ * IMAGES: item 14 uses the two dot-counting images, item 18 uses the
+ * constructional-praxis sheet, items 25-29 use isolated crops from the
+ * naming composite, and items 38-42 use the five single-object images
+ * that follow the naming composite in the source document. The spatial
+ * orientation designs remain grouped source material and are not mapped
+ * until each five-choice row is isolated and verified.
  */
 
 var RQCSTContent = {
@@ -217,19 +216,19 @@ var RQCSTContent = {
     // ---- 25-29. NAMING — /5 (stimulus images required) --------------------------------
     { id: 'naming_25', section: 'Naming', type: 'passfail', points: 1, examinerScored: true,
       prompt: '25. Say: "Name or write the name of this item."',
-      stimulusNote: 'Examiner: show item 1 from the printed Naming row (or map the extracted image via the contact sheet).' },
+      stimulusImage: 'assets/test-images/rqcst/naming-1.png', stimulusImageAlt: 'RQCST naming stimulus 1' },
     { id: 'naming_26', section: 'Naming', type: 'passfail', points: 1, examinerScored: true,
       prompt: '26. Say: "Name or write the name of this item."',
-      stimulusNote: 'Examiner: show item 2 from the printed Naming row (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/naming-2.png', stimulusImageAlt: 'RQCST naming stimulus 2' },
     { id: 'naming_27', section: 'Naming', type: 'passfail', points: 1, examinerScored: true,
       prompt: '27. Say: "Name or write the name of this item."',
-      stimulusNote: 'Examiner: show item 3 from the printed Naming row (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/naming-3.png', stimulusImageAlt: 'RQCST naming stimulus 3' },
     { id: 'naming_28', section: 'Naming', type: 'passfail', points: 1, examinerScored: true,
       prompt: '28. Say: "Name or write the name of this item."',
-      stimulusNote: 'Examiner: show item 4 from the printed Naming row (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/naming-4.png', stimulusImageAlt: 'RQCST naming stimulus 4' },
     { id: 'naming_29', section: 'Naming', type: 'passfail', points: 1, examinerScored: true,
       prompt: '29. Say: "Name or write the name of this item."',
-      stimulusNote: 'Examiner: show item 5 from the printed Naming row (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/naming-5.png', stimulusImageAlt: 'RQCST naming stimulus 5' },
 
     // ---- 30-33. ABSTRACT REASONING: SIMILARITIES — auto-scored, 1 pt each --------------
     {
@@ -334,19 +333,19 @@ var RQCSTContent = {
     // ---- 38-42. UNUSUAL VIEWS — /5 (stimulus images required) ----------------------------
     { id: 'unusual_views_38', section: 'Unusual Views', type: 'text', points: 1, examinerScored: true,
       prompt: '38. Say: "Identify or write the name of this object." Record the answer given; 1 pt for a correct identification.',
-      stimulusNote: 'Examiner: show Unusual View 1 from the printed sheet (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/image4.jpg', stimulusImageAlt: 'RQCST unusual view 1' },
     { id: 'unusual_views_39', section: 'Unusual Views', type: 'text', points: 1, examinerScored: true,
       prompt: '39. Say: "Identify or write the name of this object."',
-      stimulusNote: 'Examiner: show Unusual View 2 from the printed sheet (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/image5.jpg', stimulusImageAlt: 'RQCST unusual view 2' },
     { id: 'unusual_views_40', section: 'Unusual Views', type: 'text', points: 1, examinerScored: true,
       prompt: '40. Say: "Identify or write the name of this object."',
-      stimulusNote: 'Examiner: show Unusual View 3 from the printed sheet (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/image6.jpg', stimulusImageAlt: 'RQCST unusual view 3' },
     { id: 'unusual_views_41', section: 'Unusual Views', type: 'text', points: 1, examinerScored: true,
       prompt: '41. Say: "Identify or write the name of this object."',
-      stimulusNote: 'Examiner: show Unusual View 4 from the printed sheet (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/image8.jpg', stimulusImageAlt: 'RQCST unusual view 4' },
     { id: 'unusual_views_42', section: 'Unusual Views', type: 'text', points: 1, examinerScored: true,
       prompt: '42. Say: "Identify or write the name of this object."',
-      stimulusNote: 'Examiner: show Unusual View 5 from the printed sheet (or map the extracted image).' },
+      stimulusImage: 'assets/test-images/rqcst/image9.jpg', stimulusImageAlt: 'RQCST unusual view 5' },
 
     // ---- 43-47. SPATIAL ORIENTATION — /5 (design rows; A-E options) ------------------------
     {
