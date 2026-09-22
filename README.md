@@ -60,6 +60,7 @@ neuropsych-app/
 ├── wrangler.toml          Workers config: static assets + D1 binding
 ├── package.json           wrangler devDependency + npm scripts (dev/deploy)
 ├── DEPLOYMENT.md          Full hosting walkthrough (Node, GitHub, D1, deploy)
+├── docs/USER_MANUAL.md    Operator, administration, backup, and troubleshooting manual
 └── lib/                   (empty — reserved if you later want a vendored PDF library)
 ```
 
@@ -227,7 +228,8 @@ headless DOM (jsdom) for the click-through UI flows:
 - **Not automatable here** (needs a touchscreen): trail interaction
   (no-lift drawing, error-on-lift, colour changes), the live view
   updating on a second device, and print-to-PDF output — these are on
-  the manual checklist below.
+  the manual checklist below. See [docs/USER_MANUAL.md](docs/USER_MANUAL.md)
+  for the complete operator and deployment instructions.
 
 ## Known limitations / good next steps
 
@@ -237,9 +239,10 @@ headless DOM (jsdom) for the click-through UI flows:
   complex figure, (b) the RQCST figure rows (items 14, 18, 25–29,
   38–42, 43–47 — best-guess paths are in place and marked VERIFY in
   the content files), and (c) the TMT worksheet files. Fix any wrong
-  `stimulusImage` paths in `data/*-content.js`. The MoCA naming animals
-  still need cropping out of the scanned full sheet (see the header of
-  `data/moca-content.js`) so the memory words aren't leaked.
+  `stimulusImage` paths in `data/*-content.js`. The MoCA v8.1 naming
+  animals are now isolated in `assets/test-images/moca/naming-1.png` through
+  `naming-3.png`. RQCST composite source images still need item-specific
+  crops before they can be mapped safely.
 - Trail node coordinates approximate the printed worksheets — they're
   plain editable fractions if you want the exact validated positions.
 - Practice Mode sessions are flagged (`practiceMode: true`) but still

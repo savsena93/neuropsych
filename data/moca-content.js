@@ -35,11 +35,9 @@
  * IMAGES: the alternating-trail layout is the interactive 'trail' item
  * below; the cube stimulus is a local SVG (assets/test-images/moca/
  * cube.svg). The naming animals live inside the scanned full-sheet image
- * (assets/test-images/moca/image1.png) and CANNOT be shown as-is without
- * leaking the memory words etc. — crop the three animals out of the
- * sheet with any image editor, save them as e.g. assets/test-images/
- * moca/naming-1.png (lion), naming-2.png (rhinoceros), naming-3.png
- * (camel), then set `stimulusImage` on the three naming items.
+ * (assets/test-images/moca/image1.png). The naming animals use isolated
+ * local crops so the memory words and unrelated sheet content are never
+ * exposed.
  *
  * v8.2 differences (also in the source document), if you ever switch
  * versions: chair copy instead of cube; clock 10 past 9; naming
@@ -103,7 +101,8 @@ var MoCAContent = {
       section: 'Naming',
       type: 'passfail',
       prompt: 'Point to the first animal (lion) and ask: "Tell me the name of this animal." Accept: lion.',
-      stimulusNote: 'Examiner: show the Naming figures from the printed MoCA sheet (or add cropped stimulus images \u2014 see the note at the top of this file).',
+      stimulusImage: 'assets/test-images/moca/naming-1.png',
+      stimulusImageAlt: 'MoCA naming stimulus: lion',
       points: 1,
       examinerScored: true
     },
@@ -112,6 +111,8 @@ var MoCAContent = {
       section: 'Naming',
       type: 'passfail',
       prompt: 'Point to the second animal (rhinoceros) and ask: "Tell me the name of this animal." Accept: rhinoceros or rhino.',
+      stimulusImage: 'assets/test-images/moca/naming-2.png',
+      stimulusImageAlt: 'MoCA naming stimulus: rhinoceros',
       points: 1,
       examinerScored: true
     },
@@ -120,6 +121,8 @@ var MoCAContent = {
       section: 'Naming',
       type: 'passfail',
       prompt: 'Point to the third animal (camel) and ask: "Tell me the name of this animal." Accept: camel or dromedary.',
+      stimulusImage: 'assets/test-images/moca/naming-3.png',
+      stimulusImageAlt: 'MoCA naming stimulus: camel',
       points: 1,
       examinerScored: true
     },

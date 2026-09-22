@@ -44,7 +44,8 @@ The latest checkpoint includes:
 - Browser/localStorage data is also device-specific. Use the administrator Backup export/import flow to move local data.
 - The app is intentionally vanilla JavaScript and remains `file://` compatible. Do not introduce a build framework without revisiting the offline requirement.
 - Before deployment, run syntax checks and manually verify the participant flow, examiner live view, pause/resume/stop, PDF report, and stimulus mappings.
-- Stimulus caveat: the full-sheet MoCA assets and composite RQCST assets must not be assigned directly to individual naming items. They contain multiple unrelated stimuli and need to be cropped into item-specific files first.
+- Stimulus caveat: the MoCA v8.1 naming items now use verified isolated crops in `assets/test-images/moca/`. The RQCST source assets remain composite sheets and must not be assigned directly to individual naming, unusual-view, or spatial-orientation items until item-specific crops are verified.
+- Operator documentation: see `docs/USER_MANUAL.md` for participant setup, consent, test administration, reports, backup, troubleshooting, and Cloudflare Workers Builds.
 - Session control: stopped assessments may now be stopped from either `in_progress` or `paused` state in both the local and Worker backends.
 
 ## Git workflow
