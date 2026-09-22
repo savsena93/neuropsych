@@ -292,14 +292,15 @@ async function handleLogin(request, env) {
 
   if (body.role === 'examinee') {
     var code = (body.code || '').trim();
+    var participantPin = (body.participantPin !== undefined ? body.participantPin : body.pin) || '';
     if (!code) return fail(400, 'Enter your participant code.');
-    if (!body.pin) return fail(400, 'Enter your participant PIN.');
+    if (!participantPin) return fail(400, 'Enter your participant PIN.');
     var prow = await env.DB.prepare('SELECT * FROM participants WHERE code = ?').bind(code).first();
     if (!prow) {
       return fail(401, 'No participant found with that code. Ask your examiner to check it.');
     }
     var participant = participantFromRow(prow);
-    if (participant.accessPin && participant.accessPin !== hashPin(body.pin)) {
+    if (participant.accessPin && participant.accessPin !== hashPin(participantPin)) {
       return fail(401, 'Incorrect participant PIN.');
     }
     var examinee = {
@@ -500,8 +501,12 @@ async function handleGetParticipant(env, actor, code) {
   if (actor.role === 'examiner' && participant.createdBy !== actor.id) {
     return fail(403, 'Not your participant.');
   }
-  if (actor.role === 'examinee' && ('examinee:' + participant.code) !== actor.id) {
-    return fail(403, 'Not your participant.');
+  if (actor.role === 'examinee') {
+    var actorCode = String(actor.id).replace(/^examinee:/, '');
+    var examineeParticipantCode = actor.examineeParticipant && actor.examineeParticipant.code ? actor.examineeParticipant.code : actorCode;
+    if (participant.code !== examineeParticipantCode && participant.code !== actorCode) {
+      return fail(403, 'Not your participant.');
+    }
   }
   return json({ participant: participant });
 }
@@ -514,6 +519,13 @@ async function handleConsent(request, env, actor, code) {
   if (!row) return fail(404, 'Participant not found.');
   var body = await readJson(request);
   var participant = participantFromRow(row);
+  if (actor.role === 'examinee') {
+    var actorCode = String(actor.id).replace(/^examinee:/, '');
+    var examineeParticipantCode = actor.examineeParticipant && actor.examineeParticipant.code ? actor.examineeParticipant.code : actorCode;
+    if (participant.code !== examineeParticipantCode && participant.code !== actorCode) {
+      return fail(403, 'Not your participant assignment.');
+    }
+  }
   participant.consent.signedAt = nowIso();
   participant.consent.signatureDataUrl = body ? body.signatureDataUrl : null;
   await env.DB.prepare('UPDATE participants SET consent = ? WHERE code = ?')
@@ -562,12 +574,23 @@ async function handleListSessions(env, actor) {
 // session to the examiner who enrolled the participant.
 async function handleCreateSession(request, env, actor) {
   var body = await readJson(request);
-  var participantRow = body && body.participantCode
-    ? await env.DB.prepare('SELECT * FROM participants WHERE code = ?').bind(body.participantCode).first() : null;
+  var participantCode = body && body.participantCode ? body.participantCode : null;
+  if (!participantCode && actor && actor.role === 'examinee') {
+    participantCode = String(actor.id).replace(/^examinee:/, '');
+  }
+  var participantRow = participantCode
+    ? await env.DB.prepare('SELECT * FROM participants WHERE code = ?').bind(participantCode).first() : null;
   if (!participantRow) return fail(400, 'Participant assignment not found.');
   var participant = participantFromRow(participantRow);
-  if (actor.role === 'examinee' && participant.code !== String(actor.id).replace(/^examinee:/, '')) {
+  var actorParticipantCode = actor && actor.role === 'examinee'
+    ? (String(actor.id).replace(/^examinee:/, '') || (actor.examineeParticipant && actor.examineeParticipant.code) || null)
+    : null;
+  if (actor.role === 'examinee' && actorParticipantCode && participant.code !== actorParticipantCode) {
     return fail(403, 'Not your participant assignment.');
+  }
+  if (actor.role === 'examinee' && !actorParticipantCode && participantCode && body && body.participantCode) {
+    // fallback: if the actor object does not include the participant code,
+    // accept only the exact code that was supplied with the request.
   }
   var session = {
     id: nextId('session'),
@@ -601,8 +624,12 @@ async function loadSessionForActor(env, actor, sessionId) {
   var session = sessionFromRow(row);
   if (actor.role === 'admin') return { session: session };
   if (actor.role === 'examiner' && session.examinerId === actor.id) return { session: session };
-  if (actor.role === 'examinee' && session.participantCode === String(actor.id).replace(/^examinee:/, '')) {
-    return { session: session };
+  if (actor.role === 'examinee') {
+    var actorCode = String(actor.id).replace(/^examinee:/, '');
+    var examineeParticipantCode = actor.examineeParticipant && actor.examineeParticipant.code ? actor.examineeParticipant.code : actorCode;
+    if (session.participantCode === actorCode || session.participantCode === examineeParticipantCode) {
+      return { session: session };
+    }
   }
   return { error: fail(403, 'Not your session.') };
 }
@@ -683,7 +710,9 @@ async function handleComplete(request, env, actor, sessionId) {
 async function handleStop(request, env, actor, sessionId) {
   var found = await loadSessionForActor(env, actor, sessionId);
   if (found.error) return found.error;
-  if (found.session.status !== 'in_progress') return fail(400, 'Only an in-progress session can be stopped.');
+  if (found.session.status !== 'in_progress' && found.session.status !== 'paused') {
+    return fail(400, 'Only an in-progress or paused session can be stopped.');
+  }
   var body = await readJson(request);
   if (!body || !body.reason || !String(body.reason).trim()) return fail(400, 'A reason is required to stop a session.');
   found.session.status = 'stopped';

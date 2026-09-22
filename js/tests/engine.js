@@ -553,6 +553,7 @@ var ItemEngine = (function () {
       var wrongNode = null;
       var freeformPoints = [];
       var lastPoint = null;
+      var hasStarted = false;
 
       function sizeCanvas() {
         var dpr = window.devicePixelRatio || 1;
@@ -676,9 +677,19 @@ var ItemEngine = (function () {
       frame.footer.appendChild(doneBtn);
 
       function recordAndAdvance() {
-        if (!state.finished) return;
+        if (!hasStarted && !state.finished) return;
+        if (!state.finished) {
+          state.finished = true;
+          state.active = false;
+          if (activeTimer) { clearInterval(activeTimer); activeTimer = null; }
+          state.elapsed = Math.round((Date.now() - state.startedAt) / 1000);
+          display.textContent = formatClock(state.elapsed);
+          statusLabel.textContent = 'Trail finished manually in ' + state.elapsed + 's with ' + state.errors + ' error(s).';
+          redraw();
+          liveUpdate(item, canvas.toDataURL('image/png'), true);
+        }
         saveResponse(item, {
-          value: 'completed',
+          value: state.finished ? 'completed' : 'not_started',
           elapsedSeconds: state.elapsed,
           errors: state.errors,
           drawingDataUrl: canvas.toDataURL('image/png'),
@@ -691,6 +702,8 @@ var ItemEngine = (function () {
       function onDown(evt) {
         if (state.finished) return;
         evt.preventDefault();
+        hasStarted = true;
+        doneBtn.disabled = false;
         startTimer();
         state.active = true;
         var p = pointFromEvent(evt);

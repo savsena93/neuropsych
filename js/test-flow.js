@@ -85,13 +85,31 @@ var TestFlow = (function () {
 
   function getSelectedKeys() { return selectedKeys.slice(); }
 
+  function setPreparedParticipantCode(participantCode) {
+    preparedParticipantCode = participantCode || null;
+  }
+
   function showAssessmentReady(participantCode) {
-    preparedParticipantCode = participantCode;
-    Router.navigate('assessmentReady');
+    setPreparedParticipantCode(participantCode);
+    if (Auth.isExaminee()) {
+      Router.navigate('assessmentReady');
+      return;
+    }
+    Router.navigate(Auth.isAdmin() ? 'adminDashboard' : 'examinerDashboard');
   }
 
   function startPreparedAssessment() {
-    return startAfterConsent(preparedParticipantCode);
+    var participantCode = preparedParticipantCode;
+    if (!participantCode) {
+      var currentUser = Auth.getCurrentUser();
+      if (currentUser && currentUser.examineeParticipant) {
+        participantCode = currentUser.examineeParticipant.code;
+      }
+    }
+    if (!participantCode) {
+      throw new Error('No participant code is available for this assessment.');
+    }
+    return startAfterConsent(participantCode);
   }
 
   // ---- called by app.js once consent has been recorded -----------------
@@ -481,6 +499,7 @@ var TestFlow = (function () {
     viewSessionReport: viewSessionReport,
     setAssignedTests: setAssignedTests,
     getSelectedKeys: getSelectedKeys,
+    setPreparedParticipantCode: setPreparedParticipantCode,
     showAssessmentReady: showAssessmentReady,
     startPreparedAssessment: startPreparedAssessment
   };

@@ -280,6 +280,7 @@
       return;
     }
     pendingParticipantCode = p.code;
+    TestFlow.setPreparedParticipantCode(p.code);
     TestFlow.setAssignedTests(p.assignedTests || []);
     DB.listSessions().then(function (sessions) {
       var mine = sessions.filter(function (s) {
@@ -894,6 +895,17 @@
     });
   }
 
+  function formatAssignedTestName(key) {
+    var mapping = {
+      MoCA: 'MoCA — Montreal Cognitive Assessment',
+      RQCST: 'RQCST',
+      Rey: 'Rey Complex Figure Test',
+      TMT: 'Trail-Making Test',
+      BSI18: 'BSI-18'
+    };
+    return mapping[key] || key;
+  }
+
   function renderAssessmentReady() {
     var summary = byId('assignedTestsSummary');
     clearChildren(summary);
@@ -901,7 +913,7 @@
     tests.forEach(function (key) {
       var item = document.createElement('div');
       item.className = 'assigned-test';
-      item.textContent = key;
+      item.textContent = formatAssignedTestName(key);
       summary.appendChild(item);
     });
   }
@@ -914,7 +926,7 @@
     TestFlow.getSelectedKeys().forEach(function (key) {
       var item = document.createElement('div');
       item.className = 'assigned-test';
-      item.textContent = key;
+      item.textContent = formatAssignedTestName(key);
       summary.appendChild(item);
     });
   }

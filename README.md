@@ -264,7 +264,7 @@ headless DOM (jsdom) for the click-through UI flows:
 | Questions the examinee must not see show only the domain | Yes — `examinerOnly` items across MoCA/RQCST/Rey |
 | TMT: one succession without lifting, start/end markers, connected colour change, lift = error, practice parts, timing recorded | Yes — interactive `trail` item type |
 | Rey: timed drawing (start→finish), copy untimed/no countdown, immediate after 3 min, delayed after 3 min, figure only in copy, no hint between phases | Yes — three phases, first-stroke timers, gates hide their purpose from the examinee |
-| Examiner sees drawings in real time | Yes — Watch live polling view (local or hosted) |
+| Examiner sees drawings in real time | Yes — Watch live polling view when served through the Worker/D1 deployment; `file://` mode is single-device and cannot share live state across devices |
 | RQCST: questions extracted per domain, asked separately | Yes — 50 items across 17 domains |
 | BSI-18: self-report selections | Yes — 0–4 scale items |
 | Pushed to Cloudflare Workers | Yes — `DEPLOYMENT.md` walkthrough (Worker + D1 + static assets + GitHub options) |

@@ -80,11 +80,14 @@ same participants, sessions and records in D1.
 
 Two ways to make every push auto-deploy; pick one:
 
-1. **Workers Builds (recommended — no secrets to manage).** In the
-   Cloudflare dashboard: **Workers & Pages → neuropsych-app → Settings
-   → Build → Connect** a Git repository. Cloudflare clones the repo,
-   runs `npx wrangler deploy` on every push to the production branch,
-   and shows build logs. No GitHub Actions, no API tokens.
+1. **Workers Builds (recommended — no GitHub Actions).** In the
+  Cloudflare dashboard, open **Workers & Pages**, select the deployed
+  `neuropsych-app` Worker, then open **Settings → Builds → Connect** and
+  authorize GitHub. Select `savsena93/neuropsych`, choose the `main`
+  production branch, and set the build command to `npx wrangler deploy`.
+  Cloudflare then clones the repository and deploys each new push to
+  `main`, with build logs in the dashboard. No GitHub Actions workflow or
+  repository token is needed.
 
 2. **GitHub Actions.** Create a Cloudflare API token (dashboard → My
    Profile → API Tokens → "Edit Cloudflare Workers" template), then add

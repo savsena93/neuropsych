@@ -189,7 +189,7 @@ var DB = (function () {
       }
       if (credentials.role === 'examinee') {
         var code = (credentials.code || '').trim();
-        var accessPin = (credentials.pin || '').trim();
+        var accessPin = ((credentials.participantPin !== undefined ? credentials.participantPin : credentials.pin) || '').trim();
         if (!code) return { ok: false, error: 'Enter your participant code.' };
         if (!accessPin) return { ok: false, error: 'Enter your participant PIN.' };
         var p = getParticipant(code);
@@ -468,7 +468,8 @@ var DB = (function () {
       var list = listSessions();
       var found = null;
       for (var i = 0; i < list.length; i++) {
-        if (list[i].id === sessionId && list[i].status === 'in_progress') {
+        if (list[i].id === sessionId &&
+          (list[i].status === 'in_progress' || list[i].status === 'paused')) {
           list[i].status = 'stopped';
           list[i].stoppedAt = nowIso();
           list[i].stopReason = reason;
@@ -628,7 +629,10 @@ var DB = (function () {
 
     function loginUser(credentials) {
       return request('POST', '/api/login', {
-        role: credentials.role, pin: credentials.pin, code: credentials.code
+        role: credentials.role,
+        pin: credentials.role === 'examinee' ? (credentials.participantPin !== undefined ? credentials.participantPin : credentials.pin) : credentials.pin,
+        participantPin: credentials.participantPin,
+        code: credentials.code
       }).then(function (data) {
         apiToken = data.token;
         return { ok: true, user: data.user, token: data.token };
