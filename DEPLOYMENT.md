@@ -1,7 +1,7 @@
 # Deploying to Cloudflare Workers + D1
 
 The app has **two swappable backends behind one API** (see the header of
-`js/storage.js`):
+`js/core/storage.js`):
 
 | Mode | When | Database | Sessions shared across devices |
 |---|---|---|---|
@@ -138,7 +138,7 @@ identical in both backends, so nothing is lost or translated.
   it when present). Login tokens are HMAC-signed, expire after 24
   hours, and are safely persisted in `localStorage` across page reloads.
 - **PIN hashing is intentionally simple, not cryptographic** (same
-  checksum as the client — see `js/storage.js`). Fine for a feasibility
+  checksum as the client — see `js/core/storage.js`). Fine for a feasibility
   prototype; revisit before any real clinical deployment with sensitive
   data at stake.
 - Role checks are enforced **server-side** in `worker.js` (admin-only

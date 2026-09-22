@@ -23,11 +23,11 @@ Each test's content and scoring live in their own pair of files:
 
 | Test | Editable content | Scoring logic |
 |---|---|---|
-| MoCA | `data/moca-content.js` | `js/tests/moca.js` |
-| RQCST | `data/rqcst-content.js` | `js/tests/rqcst.js` |
-| Rey Complex Figure | `data/rey-content.js` | `js/tests/rey.js` |
-| Trail-Making Test | `data/tmt-content.js` | `js/tests/tmt.js` |
-| BSI-18 | `data/bsi18-content.js` | `js/tests/bsi18.js` |
+| MoCA | `data/tests/moca-content.js` | `js/tests/moca.js` |
+| RQCST | `data/tests/rqcst-content.js` | `js/tests/rqcst.js` |
+| Rey Complex Figure | `data/tests/rey-content.js` | `js/tests/rey.js` |
+| Trail-Making Test | `data/tests/tmt-content.js` | `js/tests/tmt.js` |
+| BSI-18 | `data/tests/bsi18-content.js` | `js/tests/bsi18.js` |
 
 All five run on one shared renderer, `js/tests/engine.js` — it turns a
 plain array of item objects (see the schema at the top of that file)
@@ -41,16 +41,12 @@ neuropsych-app/
 ├── index.html            Every screen, as hidden <section data-view="...">
 ├── css/styles.css         Design tokens + components; no web fonts, no CDN
 ├── js/
-│   ├── storage.js         Two swappable backends (localStorage / Worker+D1 API), one DB.* API
-│   ├── auth.js            PIN login, role helpers
-│   ├── router.js          Shows/hides screens, role-gates routes
-│   ├── app.js             Login, dashboards, users, participants, intake, consent
-│   ├── test-flow.js       Test selection → runs each chosen test → scored summary
-│   ├── backup-ui.js       File/Blob handling for the backup screen
+│   ├── core/              Storage, authentication, and route gating
+│   ├── assessment/        App shell, assessment workflow, and backup UI
 │   └── tests/
 │       ├── engine.js       Shared item renderer used by all five tests
 │       └── moca.js, rqcst.js, rey.js, tmt.js, bsi18.js   Scoring logic only
-├── data/
+├── data/tests/
 │   └── moca-content.js, rqcst-content.js, rey-content.js,
 │       tmt-content.js, bsi18-content.js                  REAL test content (see each file's header)
 ├── assets/test-images/    Stimulus images extracted from the source .docx documents
@@ -61,15 +57,15 @@ neuropsych-app/
 ├── package.json           wrangler devDependency + npm scripts (dev/deploy)
 ├── DEPLOYMENT.md          Full hosting walkthrough (Node, GitHub, D1, deploy)
 ├── docs/USER_MANUAL.md    Operator, administration, backup, and troubleshooting manual
-└── lib/                   (empty — reserved if you later want a vendored PDF library)
+└── lib/                   Vendored browser libraries (bundled jsPDF)
 ```
 
 **Why content is JavaScript, not JSON:** the offline/no-CDN requirement
-means this has to run from a plain `file://` URL with no local server.
+  means this has to run from a plain `file://` URL with no local server.
 Chrome (and most browsers) block `fetch()`/`XHR` reads of local files
 from a `file://` page, so a JSON file loaded that way would silently
 fail on the actual tablet even though it might work in some desktop
-testing setups. Plain `<script src="data/moca-content.js">` tags have
+  testing setups. Plain `<script src="data/tests/moca-content.js">` tags have
 no such restriction. Practically, this changes nothing about editing
 the content — every file is still a plain, readable array of objects —
 it just means each one starts with `var SomethingContent = {` instead
@@ -148,7 +144,7 @@ of bare `{`.
   PDF" print destination satisfies the requirement with zero extra
   dependencies to vendor or maintain offline. If you specifically need
   a jsPDF-generated file instead of a print-to-PDF one, that can be
-  added later in `lib/` without touching any scoring code.
+  already bundled in `lib/` without touching any scoring code.
 - **Data management.** Full audit trail; admin-only record deletion
   (reason required); JSON export/import for USB backup, with a choice
   between merging and fully replacing existing data on import.
@@ -170,12 +166,12 @@ of bare `{`.
   double-tap on the consent "Record consent" button — an entirely
   realistic risk on a touchscreen tablet under time pressure — would
   create two session records from one action, with the second
-  overwriting the first mid-flight. `js/app.js` now latches both the
+  overwriting the first mid-flight. `js/assessment/app.js` now latches both the
   intake and consent submit handlers so a second, rapid tap is silently
   ignored rather than creating a corrupt second record. I'd recommend
   the same pattern for any other one-shot action you add later.
 - **Every `DB.*` call returns a Promise in both backends** (see
-  `js/storage.js`) — the hosted backend is inherently async, so the UI
+  `js/core/storage.js`) — the hosted backend is inherently async, so the UI
   must chain on results rather than read them synchronously. Every
   caller in `app.js`, `test-flow.js`, `engine.js` and `backup-ui.js`
   now does, and one-shot actions (intake, consent) latch synchronously
@@ -185,7 +181,7 @@ of bare `{`.
   scoped to their own participants/sessions).
 - **RQCST** is the full 50-item Mate-Kole et al. protocol from the
   source form, including the Summary of Scores categories — see the
-  header of `data/rqcst-content.js`.
+  header of `data/tests/rqcst-content.js`.
 - **Rey scoring** uses the full 18-element Osterrieth key (0/0.5/1/2
   per element, /36 per phase) via one examiner-scored item per phase,
   with the element list spelled out in the prompt for on-screen
@@ -239,7 +235,7 @@ headless DOM (jsdom) for the click-through UI flows:
   complex figure, (b) the RQCST figure rows (items 14, 18, 25–29,
   38–42, 43–47 — best-guess paths are in place and marked VERIFY in
   the content files), and (c) the TMT worksheet files. Fix any wrong
-  `stimulusImage` paths in `data/*-content.js`. The MoCA v8.1 naming
+  `stimulusImage` paths in `data/tests/*-content.js`. The MoCA v8.1 naming
   animals are now isolated in `assets/test-images/moca/naming-1.png` through
   `naming-3.png`. RQCST naming and unusual-view stimuli are also mapped to
   item-specific local assets, including five spatial-orientation row

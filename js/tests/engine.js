@@ -7,7 +7,7 @@
  * describes its items using the schema below, and the engine turns
  * that into UI, timers, auto-save, and auto-advance.
  *
- * ITEM SCHEMA (see data/*-content.js for real examples):
+ * ITEM SCHEMA (see data/tests/*-content.js for real examples):
  * {
  *   id: 'unique_item_id',
  *   section: 'Domain / part label shown above the prompt',

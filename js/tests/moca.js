@@ -2,7 +2,7 @@
  * js/tests/moca.js
  * -----------------------------------------------------------------------
  * SCORING LOGIC for the official MoCA v8.1 content in
- * data/moca-content.js. Rules implemented (from the MoCA administration
+ * data/tests/moca-content.js. Rules implemented (from the MoCA administration
  * and scoring instructions in the source document):
  *
  *   - Straight item-point sums for examiner-scored items.

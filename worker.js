@@ -2,7 +2,7 @@
  * worker.js
  * -----------------------------------------------------------------------
  * Cloudflare Workers + D1 (serverless SQLite) backend for the toolkit.
- * This is the server half of the two-backend design in js/storage.js:
+ * This is the server half of the two-backend design in js/core/storage.js:
  * the ApiBackend there calls exactly the /api/* endpoints below whenever
  * the app is served over http(s), so deploying this Worker together with
  * a D1 database turns the single-tablet prototype into a shared,
@@ -26,7 +26,7 @@
  *
  * Parity notes:
  *   - hashPin is the same deliberately non-cryptographic checksum as the
- *     client's (see the header of js/storage.js) so backup export/import
+ *     client's (see the header of js/core/storage.js) so backup export/import
  *     stays interoperable between the two backends. Fine for a
  *     feasibility prototype, but it must NOT be treated as secure
  *     storage if this is ever adapted for a real clinical deployment.
@@ -60,7 +60,7 @@ function nextId(prefix) {
   return prefix + '_' + Date.now().toString(36) + '_' + Math.floor(Math.random() * 1e6).toString(36);
 }
 
-// Same checksum as the client (js/storage.js) — keep the two in lockstep.
+// Same checksum as the client (js/core/storage.js) — keep the two in lockstep.
 function hashPin(pin) {
   var str = String(pin);
   var hash = 0;

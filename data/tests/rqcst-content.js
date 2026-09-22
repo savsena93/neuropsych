@@ -1,5 +1,5 @@
 /**
- * data/rqcst-content.js
+ * data/tests/rqcst-content.js
  * -----------------------------------------------------------------------
  * Revised Quick Cognitive Screening Test (RQCST; Mate-Kole et al., 2009)
  * — all 50 items transcribed from the source test form. Structure and

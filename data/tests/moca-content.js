@@ -1,5 +1,5 @@
 /**
- * data/moca-content.js
+ * data/tests/moca-content.js
  * -----------------------------------------------------------------------
  * Official MoCA Version 8.1 content, transcribed from the administration
  * and scoring instructions and the test sheet in the source document

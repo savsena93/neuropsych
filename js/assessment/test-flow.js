@@ -1,5 +1,5 @@
 /**
- * js/test-flow.js
+ * js/assessment/test-flow.js
  * -----------------------------------------------------------------------
  * Owns everything between "examiner taps + New assessment" and "session
  * summary screen": test selection, handing off to participant intake +
