@@ -17,7 +17,7 @@ assets/test-images/        Local stimulus assets and verification contact sheet
 docs/                      Source documents, operator manual, and project records
 lib/                       Vendored browser libraries loaded without a CDN
 worker.js                  Cloudflare API entrypoint
-schema.sql                 D1 schema
+db/schema.sql              D1 schema
 wrangler.toml              Worker, assets, and D1 configuration
 ```
 
@@ -41,7 +41,7 @@ The content modules are loaded before scoring modules because they publish the t
 - `localStorage` for `file://` offline mode;
 - the `/api/*` Cloudflare Worker and D1 backend for `http(s)` mode.
 
-`worker.js` is intentionally kept at the repository root because `wrangler.toml` uses it as the Worker entrypoint. `schema.sql` and `wrangler.toml` are deployment configuration, not browser modules.
+`worker.js` and `wrangler.toml` are intentionally kept at the repository root because Wrangler uses them as deployment entrypoints. `db/schema.sql` is deployment configuration, not a browser module.
 
 ## Test extension pattern
 
@@ -57,4 +57,4 @@ The shared `js/tests/engine.js` should be changed only when the interaction patt
 
 ## Deployment rule
 
-Cloudflare Workers Builds deploys the repository root with `npx wrangler deploy`. Do not move `worker.js`, `schema.sql`, or `wrangler.toml` into browser source directories. Keep source PDFs/DOCX files under `docs/`; `.assetsignore` excludes them from the hosted static asset upload.
+Cloudflare Workers Builds deploys the repository root with `npx wrangler deploy`. Do not move `worker.js` or `wrangler.toml` into browser source directories. Keep the D1 schema under `db/` and source PDFs/DOCX files under `docs/`; `.assetsignore` excludes them from the hosted static asset upload.

@@ -5,10 +5,10 @@ Plain HTML/CSS/JavaScript, no build step, no frameworks, no CDNs.
 tablet and open `index.html` for the offline single-tablet mode
 (localStorage), or deploy the same folder to **Cloudflare Workers +
 D1** (serverless SQLite) for a shared, multi-device deployment — see
-**DEPLOYMENT.md**. The backend is chosen automatically from the page
+**docs/DEPLOYMENT.md**. The backend is chosen automatically from the page
 protocol; nothing in the front end changes.
 
-For continuing work from another account, see **HANDOFF.md**. It contains
+For continuing work from another account, see **docs/HANDOFF.md**. It contains
 the clone, install, local D1, development, and Git workflow instructions.
 
 ## Where the five tests are
@@ -52,11 +52,10 @@ neuropsych-app/
 ├── assets/test-images/    Stimulus images extracted from the source .docx documents
 │   └── contact-sheet.html Open this in a browser to VERIFY the image mappings
 ├── worker.js              Cloudflare Worker: the /api/* backend (D1 + auth + roles)
-├── schema.sql             D1 (SQLite) schema for the Worker backend
+├── db/schema.sql          D1 (SQLite) schema for the Worker backend
 ├── wrangler.toml          Workers config: static assets + D1 binding
 ├── package.json           wrangler devDependency + npm scripts (dev/deploy)
-├── DEPLOYMENT.md          Full hosting walkthrough (Node, GitHub, D1, deploy)
-├── docs/USER_MANUAL.md    Operator, administration, backup, and troubleshooting manual
+├── docs/                  Manuals, deployment guide, requirements, and source documents
 └── lib/                   Vendored browser libraries (bundled jsPDF)
 ```
 
@@ -267,4 +266,4 @@ headless DOM (jsdom) for the click-through UI flows:
 | Examiner sees drawings in real time | Yes — Watch live polling view when served through the Worker/D1 deployment; `file://` mode is single-device and cannot share live state across devices |
 | RQCST: questions extracted per domain, asked separately | Yes — 50 items across 17 domains |
 | BSI-18: self-report selections | Yes — 0–4 scale items |
-| Pushed to Cloudflare Workers | Yes — `DEPLOYMENT.md` walkthrough (Worker + D1 + static assets + GitHub options) |
+| Pushed to Cloudflare Workers | Yes — `docs/DEPLOYMENT.md` walkthrough (Worker + D1 + static assets + GitHub options) |

@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "wrangler dev --no-live-reload --no-bundle --persist-to ../.wrangler-neuropsych",
     "deploy": "wrangler deploy",
-    "db:init:local": "wrangler d1 execute DB --file=schema.sql --local --persist-to ../.wrangler-neuropsych",
-    "db:init:remote": "wrangler d1 execute DB --file=schema.sql --remote"
+    "db:init:local": "wrangler d1 execute DB --file=db/schema.sql --local --persist-to ../.wrangler-neuropsych",
+    "db:init:remote": "wrangler d1 execute DB --file=db/schema.sql --remote"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"

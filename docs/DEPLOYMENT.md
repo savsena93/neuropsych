@@ -10,7 +10,7 @@ The app has **two swappable backends behind one API** (see the header of
 
 The backend is chosen automatically from the page protocol — no
 configuration in the front end changes. This folder is the complete
-deployment: `worker.js` (the API), `schema.sql` (the D1 schema), and
+deployment: `worker.js` (the API), `db/schema.sql` (the D1 schema), and
 `wrangler.toml` (the Workers config that serves the static app files
 and wires the D1 database).
 
@@ -62,8 +62,8 @@ Then apply the schema and deploy:
 
 ```sh
 # 4. create the tables (locally-emulated D1 first, then the real one)
-npx wrangler d1 execute DB --file=schema.sql --local
-npx wrangler d1 execute DB --file=schema.sql --remote
+npx wrangler d1 execute DB --file=db/schema.sql --local
+npx wrangler d1 execute DB --file=db/schema.sql --remote
 
 # 5. deploy
 npx wrangler deploy
@@ -116,7 +116,7 @@ Two ways to make every push auto-deploy; pick one:
 - `npm run dev` — serves the app at `http://localhost:8787` with a real
   Workers runtime and a **locally-emulated D1** (stored under
   `.wrangler/`). All data stays on your machine; re-running
-  `npx wrangler d1 execute DB --file=schema.sql --local` resets it.
+  `npx wrangler d1 execute DB --file=db/schema.sql --local` resets it.
 - Opening `index.html` directly (double-click, `file://`) runs the
   standalone localStorage mode — the offline tablet behaviour.
 

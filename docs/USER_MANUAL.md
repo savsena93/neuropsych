@@ -114,7 +114,7 @@ The repository uses Cloudflare Workers Builds, not GitHub Actions.
 ```powershell
 npm install
 npx wrangler login
-npx wrangler d1 execute DB --file=schema.sql --remote
+npx wrangler d1 execute DB --file=db/schema.sql --remote
 npx wrangler secret put AUTH_SECRET
 npx wrangler deploy
 ```
@@ -153,4 +153,4 @@ The RQCST naming items use isolated crops in `assets/test-images/rqcst/naming-1.
 
 ## 12. Research and clinical-use boundary
 
-This is an academic feasibility prototype. Assessment materials, scoring, permissions, data protection, and clinical use must be reviewed against the applicable instrument owners' requirements before clinical deployment. See `AUTHORIZATION.md` for the project authorization record.
+This is an academic feasibility prototype. Assessment materials, scoring, permissions, data protection, and clinical use must be reviewed against the applicable instrument owners' requirements before clinical deployment. See `docs/AUTHORIZATION.md` for the project authorization record.

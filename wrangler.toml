@@ -1,7 +1,7 @@
 # wrangler.toml
 # -----------------------------------------------------------------------
 # Cloudflare Workers configuration for the neuropsych toolkit.
-# Deploy with:  npx wrangler deploy   (see DEPLOYMENT.md for the full
+# Deploy with:  npx wrangler deploy   (see docs/DEPLOYMENT.md for the full
 # walkthrough: Node install, GitHub repo, D1 database creation, deploy).
 
 name = "neuropsych-app"
@@ -20,7 +20,7 @@ run_worker_first = ["/api/*"]
 # D1 — Cloudflare's serverless SQLite database. Create it once with:
 #   npx wrangler d1 create neuropsych-db
 # then paste the printed database_id below and apply the schema:
-#   npx wrangler d1 execute DB --file=schema.sql --remote
+#   npx wrangler d1 execute DB --file=db/schema.sql --remote
 [[d1_databases]]
 binding = "DB"
 database_name = "neuropsych"

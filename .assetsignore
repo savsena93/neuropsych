@@ -13,15 +13,14 @@ node_modules
 # server + config files
 worker.js
 wrangler.toml
-schema.sql
+db
 package.json
 package-lock.json
 .assetsignore
 
 # documentation and source documents
 README.md
-DEPLOYMENT.md
-AUTHORIZATION.md
+docs
 SRS.txt
 *.pdf
 *.docx
