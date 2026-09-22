@@ -242,8 +242,8 @@ headless DOM (jsdom) for the click-through UI flows:
   `stimulusImage` paths in `data/*-content.js`. The MoCA v8.1 naming
   animals are now isolated in `assets/test-images/moca/naming-1.png` through
   `naming-3.png`. RQCST naming and unusual-view stimuli are also mapped to
-  item-specific local assets; only the spatial-orientation five-choice rows
-  still require isolation and verification.
+  item-specific local assets, including five spatial-orientation row
+  composites with their A-E choices.
 - Trail node coordinates approximate the printed worksheets — they're
   plain editable fractions if you want the exact validated positions.
 - Practice Mode sessions are flagged (`practiceMode: true`) but still

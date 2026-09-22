@@ -141,7 +141,7 @@ The MoCA v8.1 naming items use the isolated files in `assets/test-images/moca/`:
 - `naming-2.png` — rhinoceros;
 - `naming-3.png` — camel.
 
-The RQCST naming items use isolated crops in `assets/test-images/rqcst/naming-1.png` through `naming-5.png`. The five unusual-view items use the five source-ordered single-object images following the naming composite. The spatial-orientation designs remain grouped source material and must be isolated into five-choice rows before mapping.
+The RQCST naming items use isolated crops in `assets/test-images/rqcst/naming-1.png` through `naming-5.png`. The five unusual-view items use the five source-ordered single-object images following the naming composite. The spatial-orientation items use row composites in `assets/test-images/rqcst/spatial-43.png` through `spatial-47.png`, each containing its target and A-E choices.
 
 ## 11. Troubleshooting
 

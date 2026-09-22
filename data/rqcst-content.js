@@ -36,8 +36,8 @@
  * constructional-praxis sheet, items 25-29 use isolated crops from the
  * naming composite, and items 38-42 use the five single-object images
  * that follow the naming composite in the source document. The spatial
- * orientation designs remain grouped source material and are not mapped
- * until each five-choice row is isolated and verified.
+ * orientation items use item-specific row composites built from the
+ * source-ordered target figures and the extracted A-E answer strip.
  */
 
 var RQCSTContent = {
@@ -351,7 +351,7 @@ var RQCSTContent = {
     {
       id: 'spatial_orientation_43', section: 'Spatial Orientation', type: 'choice', points: 1, examinerScored: true,
       prompt: '43. Say: "Point to the design on the right which is the same as the design on the left." The participant answers A-E; award 1 pt if the choice matches the correct design.',
-      stimulusNote: 'Examiner: show the printed design row for item 43 (or map the extracted image); the correct letter comes from your scoring key.',
+      stimulusImage: 'assets/test-images/rqcst/spatial-43.png', stimulusImageAlt: 'RQCST spatial orientation item 43',
       options: [
         { value: 'A', label: 'A' }, { value: 'B', label: 'B' }, { value: 'C', label: 'C' },
         { value: 'D', label: 'D' }, { value: 'E', label: 'E' }
@@ -360,7 +360,7 @@ var RQCSTContent = {
     {
       id: 'spatial_orientation_44', section: 'Spatial Orientation', type: 'choice', points: 1, examinerScored: true,
       prompt: '44. Say: "Point to the design on the right which is the same as the design on the left."',
-      stimulusNote: 'Examiner: show the printed design row for item 44 (or map the extracted image).',
+      stimulusImage: 'assets/test-images/rqcst/spatial-44.png', stimulusImageAlt: 'RQCST spatial orientation item 44',
       options: [
         { value: 'A', label: 'A' }, { value: 'B', label: 'B' }, { value: 'C', label: 'C' },
         { value: 'D', label: 'D' }, { value: 'E', label: 'E' }
@@ -369,7 +369,7 @@ var RQCSTContent = {
     {
       id: 'spatial_orientation_45', section: 'Spatial Orientation', type: 'choice', points: 1, examinerScored: true,
       prompt: '45. Say: "Point to the design on the right which is the same as the design on the left."',
-      stimulusNote: 'Examiner: show the printed design row for item 45 (or map the extracted image).',
+      stimulusImage: 'assets/test-images/rqcst/spatial-45.png', stimulusImageAlt: 'RQCST spatial orientation item 45',
       options: [
         { value: 'A', label: 'A' }, { value: 'B', label: 'B' }, { value: 'C', label: 'C' },
         { value: 'D', label: 'D' }, { value: 'E', label: 'E' }
@@ -378,7 +378,7 @@ var RQCSTContent = {
     {
       id: 'spatial_orientation_46', section: 'Spatial Orientation', type: 'choice', points: 1, examinerScored: true,
       prompt: '46. Say: "Point to the design on the right which is the same as the design on the left."',
-      stimulusNote: 'Examiner: show the printed design row for item 46 (or map the extracted image).',
+      stimulusImage: 'assets/test-images/rqcst/spatial-46.png', stimulusImageAlt: 'RQCST spatial orientation item 46',
       options: [
         { value: 'A', label: 'A' }, { value: 'B', label: 'B' }, { value: 'C', label: 'C' },
         { value: 'D', label: 'D' }, { value: 'E', label: 'E' }
@@ -387,7 +387,7 @@ var RQCSTContent = {
     {
       id: 'spatial_orientation_47', section: 'Spatial Orientation', type: 'choice', points: 1, examinerScored: true,
       prompt: '47. Say: "Point to the design on the right which is the same as the design on the left."',
-      stimulusNote: 'Examiner: show the printed design row for item 47 (or map the extracted image).',
+      stimulusImage: 'assets/test-images/rqcst/spatial-47.png', stimulusImageAlt: 'RQCST spatial orientation item 47',
       options: [
         { value: 'A', label: 'A' }, { value: 'B', label: 'B' }, { value: 'C', label: 'C' },
         { value: 'D', label: 'D' }, { value: 'E', label: 'E' }
